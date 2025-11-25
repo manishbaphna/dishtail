@@ -55,10 +55,10 @@ const Index = () => {
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
           <h1 className="text-3xl font-bold bg-gradient-warm bg-clip-text text-transparent">
-            dishtail
+            Dishtail
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Find recipes using your ingredients
+            Tell us ingredients you fancy and we'll find a recipe for you
           </p>
         </div>
       </header>
