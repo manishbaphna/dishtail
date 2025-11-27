@@ -10,7 +10,7 @@ export const searchRecipes = async (ingredients: string[]): Promise<Recipe[]> =>
 
     if (error) {
       console.error("Error calling search-recipes function:", error);
-      return [];
+      throw error;
     }
 
     if (!data || !data.recipes || data.recipes.length === 0) {

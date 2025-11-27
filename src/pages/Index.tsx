@@ -39,10 +39,11 @@ const Index = () => {
         setRecipes(results);
         setSelectedRecipe(results[0]);
       }
-    } catch (error) {
+    } catch (error: any) {
+      const errorMessage = error?.message || "An error occurred while searching for recipes. Please try again.";
       toast({
         title: "Search failed",
-        description: "An error occurred while searching for recipes. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
