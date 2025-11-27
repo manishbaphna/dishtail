@@ -84,6 +84,21 @@ serve(async (req) => {
     if (!aiResponse.ok) {
       const errorText = await aiResponse.text();
       console.error("AI gateway error:", aiResponse.status, errorText);
+      
+      if (aiResponse.status === 402) {
+        return new Response(
+          JSON.stringify({ error: "No credits available. Please add credits to your Lovable AI workspace to continue using recipe search." }),
+          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
+      if (aiResponse.status === 429) {
+        return new Response(
+          JSON.stringify({ error: "Too many requests. Please try again in a moment." }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
       throw new Error("Failed to search recipes");
     }
 
