@@ -55,12 +55,27 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
-          <h1 className="text-3xl font-bold bg-gradient-warm bg-clip-text text-transparent">
-            Dishtail
-          </h1>
-          <p className="text-muted-foreground text-sm mt-1">
-            Tell us ingredients you fancy and we'll find a recipe for you
-          </p>
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-warm bg-clip-text text-transparent">
+                Dishtail
+              </h1>
+              <p className="text-muted-foreground text-sm mt-1">
+                Tell us ingredients you fancy and we'll find a recipe for you
+              </p>
+            </div>
+            <a
+              href="https://lovable.dev/settings/workspace/usage"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+            >
+              <span>Manage Credits</span>
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
+          </div>
         </div>
       </header>
 
