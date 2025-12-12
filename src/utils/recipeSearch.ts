@@ -1,11 +1,15 @@
 import { Recipe } from "@/types/recipe";
 import { supabase } from "@/integrations/supabase/client";
 
-export const searchRecipes = async (ingredients: string[]): Promise<Recipe[]> => {
+export const searchRecipes = async (
+  ingredients: string[],
+  cuisine?: string,
+  servingSize?: number
+): Promise<Recipe[]> => {
   try {
     // Call the backend function to search for real recipes
     const { data, error } = await supabase.functions.invoke('search-recipes', {
-      body: { ingredients }
+      body: { ingredients, cuisine, servingSize: servingSize || 1 }
     });
 
     if (error) {
