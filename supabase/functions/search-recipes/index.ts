@@ -23,7 +23,7 @@ serve(async (req) => {
   }
 
   try {
-    const { ingredients } = await req.json();
+    const { ingredients, cuisine, servingSize = 1 } = await req.json();
     
     if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
       return new Response(
@@ -32,7 +32,7 @@ serve(async (req) => {
       );
     }
 
-    console.log("Searching for recipes with ingredients:", ingredients);
+    console.log("Searching for recipes with:", { ingredients, cuisine, servingSize });
 
     // Use Lovable AI to search for recipes
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -40,11 +40,18 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
+    const cuisineInstruction = cuisine 
+      ? `Focus on ${cuisine} cuisine recipes.` 
+      : "You can suggest recipes from any cuisine.";
+
     const searchQuery = `Find complete cooking recipes that use ALL of these ingredients: ${ingredients.join(", ")}. 
+    ${cuisineInstruction}
+    The recipe should serve ${servingSize} ${servingSize === 1 ? 'person' : 'people'} - adjust all ingredient quantities accordingly.
+    
     For each recipe found, provide:
     - Title
     - Brief description (1-2 sentences)
-    - Complete list of all ingredients
+    - Complete list of all ingredients with quantities for ${servingSize} ${servingSize === 1 ? 'serving' : 'servings'}
     - Step-by-step cooking instructions
     - Preparation time
     - Whether it's vegetarian
@@ -67,13 +74,14 @@ serve(async (req) => {
             {
               "title": "Recipe name",
               "description": "Brief description",
-              "ingredients": ["ingredient 1", "ingredient 2", ...],
+              "ingredients": ["ingredient 1 with quantity", "ingredient 2 with quantity", ...],
               "instructions": ["step 1", "step 2", ...],
               "prepTime": "time in minutes format like '25 minutes'",
               "isVegetarian": true/false,
               "isHealthy": true/false,
               "source": "Web Search"
             }
+            IMPORTANT: All ingredient quantities should be for ${servingSize} ${servingSize === 1 ? 'serving' : 'servings'}.
             Return ONLY valid JSON array, no markdown or extra text.`
           },
           { role: "user", content: searchQuery }
@@ -136,7 +144,7 @@ serve(async (req) => {
       return timeA - timeB;
     });
 
-    console.log(`Found ${sortedRecipes.length} recipes`);
+    console.log(`Found ${sortedRecipes.length} recipes for ${servingSize} servings`);
 
     return new Response(
       JSON.stringify({ recipes: sortedRecipes }),

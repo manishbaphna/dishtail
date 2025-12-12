@@ -17,7 +17,8 @@ const Index = () => {
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+  const [currentRecipeIndex, setCurrentRecipeIndex] = useState(0);
+  const [servingSize, setServingSize] = useState(1);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -58,7 +59,7 @@ const Index = () => {
     navigate("/auth");
   };
 
-  const handleSearch = async () => {
+  const handleSearch = async (cuisine: string, size: number) => {
     if (ingredients.length === 0) {
       toast({
         title: "No ingredients added",
@@ -70,10 +71,11 @@ const Index = () => {
 
     setIsSearching(true);
     setRecipes([]);
-    setSelectedRecipe(null);
+    setCurrentRecipeIndex(0);
+    setServingSize(size);
 
     try {
-      const results = await searchRecipes(ingredients);
+      const results = await searchRecipes(ingredients, cuisine, size);
       
       if (results.length === 0) {
         toast({
@@ -82,7 +84,6 @@ const Index = () => {
         });
       } else {
         setRecipes(results);
-        setSelectedRecipe(results[0]);
       }
     } catch (error: any) {
       const errorMessage = error?.message || "An error occurred while searching for recipes. Please try again.";
@@ -93,6 +94,14 @@ const Index = () => {
       });
     } finally {
       setIsSearching(false);
+    }
+  };
+
+  const handleNavigate = (direction: "prev" | "next") => {
+    if (direction === "next" && currentRecipeIndex < recipes.length - 1) {
+      setCurrentRecipeIndex(currentRecipeIndex + 1);
+    } else if (direction === "prev" && currentRecipeIndex > 0) {
+      setCurrentRecipeIndex(currentRecipeIndex - 1);
     }
   };
 
@@ -111,27 +120,29 @@ const Index = () => {
     return null;
   }
 
+  const selectedRecipe = recipes[currentRecipeIndex];
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-warm bg-clip-text text-transparent">
+        <div className="container mx-auto px-4 py-3 sm:py-4">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-warm bg-clip-text text-transparent">
                 Dishtail
               </h1>
-              <p className="text-muted-foreground text-sm mt-1">
+              <p className="text-muted-foreground text-xs sm:text-sm mt-1 line-clamp-2">
                 Tell us ingredients you fancy and we'll find a recipe for you
               </p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 flex-shrink-0">
               <a
                 href="https://lovable.dev/settings/workspace/usage"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors hidden sm:flex items-center gap-1"
               >
-                <span>Manage Credits</span>
+                <span>Credits</span>
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
@@ -140,19 +151,19 @@ const Index = () => {
                 variant="ghost"
                 size="sm"
                 onClick={handleSignOut}
-                className="flex items-center gap-2"
+                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3"
               >
                 <LogOut className="w-4 h-4" />
-                <span className="text-xs">Sign Out</span>
+                <span className="text-xs hidden sm:inline">Sign Out</span>
               </Button>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8 max-w-6xl">
-        <div className="space-y-8">
-          <section className="bg-card rounded-2xl p-6 shadow-soft border border-border">
+      <main className="container mx-auto px-4 py-4 sm:py-8 max-w-6xl">
+        <div className="space-y-6 sm:space-y-8">
+          <section className="bg-card rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-soft border border-border">
             <IngredientInput
               ingredients={ingredients}
               setIngredients={setIngredients}
@@ -162,10 +173,10 @@ const Index = () => {
           </section>
 
           {isSearching && (
-            <div className="flex justify-center items-center py-12">
+            <div className="flex justify-center items-center py-8 sm:py-12">
               <div className="text-center space-y-4">
-                <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto" />
-                <p className="text-muted-foreground">Searching for delicious recipes...</p>
+                <Loader2 className="w-10 sm:w-12 h-10 sm:h-12 animate-spin text-primary mx-auto" />
+                <p className="text-muted-foreground text-sm sm:text-base">Searching for delicious recipes...</p>
               </div>
             </div>
           )}
@@ -173,8 +184,10 @@ const Index = () => {
           {!isSearching && selectedRecipe && recipes.length > 0 && (
             <RecipeDisplay
               selectedRecipe={selectedRecipe}
-              alternativeRecipes={recipes.slice(1, 6)}
-              onSelectRecipe={setSelectedRecipe}
+              recipes={recipes}
+              currentIndex={currentRecipeIndex}
+              onNavigate={handleNavigate}
+              servingSize={servingSize}
             />
           )}
         </div>

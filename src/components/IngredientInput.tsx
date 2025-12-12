@@ -2,12 +2,32 @@ import { useState, KeyboardEvent } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, X } from "lucide-react";
+import { Plus, Search, X, Users } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const CUISINE_OPTIONS = [
+  { value: "any", label: "Any Cuisine" },
+  { value: "indian", label: "Indian" },
+  { value: "continental", label: "Continental" },
+  { value: "mexican", label: "Mexican" },
+  { value: "lebanese", label: "Lebanese" },
+  { value: "chinese", label: "Chinese" },
+  { value: "italian", label: "Italian" },
+  { value: "thai", label: "Thai" },
+  { value: "japanese", label: "Japanese" },
+  { value: "mediterranean", label: "Mediterranean" },
+];
 
 interface IngredientInputProps {
   ingredients: string[];
   setIngredients: (ingredients: string[]) => void;
-  onSearch: () => void;
+  onSearch: (cuisine: string, servingSize: number) => void;
   isSearching: boolean;
 }
 
@@ -18,6 +38,8 @@ export const IngredientInput = ({
   isSearching,
 }: IngredientInputProps) => {
   const [inputValue, setInputValue] = useState("");
+  const [cuisine, setCuisine] = useState("any");
+  const [servingSize, setServingSize] = useState(1);
 
   const addIngredient = () => {
     const trimmed = inputValue.trim();
@@ -36,6 +58,10 @@ export const IngredientInput = ({
       e.preventDefault();
       addIngredient();
     }
+  };
+
+  const handleSearch = () => {
+    onSearch(cuisine === "any" ? "" : cuisine, servingSize);
   };
 
   return (
@@ -88,8 +114,49 @@ export const IngredientInput = ({
         </div>
       )}
 
+      {/* Optional Filters */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label className="text-sm font-medium text-foreground block mb-2">
+            Cuisine Type <span className="text-muted-foreground">(optional)</span>
+          </label>
+          <Select value={cuisine} onValueChange={setCuisine}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select cuisine" />
+            </SelectTrigger>
+            <SelectContent>
+              {CUISINE_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <label className="text-sm font-medium text-foreground block mb-2">
+            Serving Size
+          </label>
+          <div className="flex items-center gap-2">
+            <Users className="w-4 h-4 text-muted-foreground" />
+            <Input
+              type="number"
+              min={1}
+              max={20}
+              value={servingSize}
+              onChange={(e) => setServingSize(Math.max(1, parseInt(e.target.value) || 1))}
+              className="w-20"
+            />
+            <span className="text-sm text-muted-foreground">
+              {servingSize === 1 ? "person" : "people"}
+            </span>
+          </div>
+        </div>
+      </div>
+
       <Button
-        onClick={onSearch}
+        onClick={handleSearch}
         disabled={ingredients.length === 0 || isSearching}
         className="w-full bg-gradient-warm hover:opacity-90 transition-opacity"
         size="lg"
