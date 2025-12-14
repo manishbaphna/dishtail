@@ -6,9 +6,10 @@ import { IngredientInput } from "@/components/IngredientInput";
 import { RecipeDisplay } from "@/components/RecipeDisplay";
 import { searchRecipes } from "@/utils/recipeSearch";
 import { Recipe } from "@/types/recipe";
-import { Loader2, LogOut } from "lucide-react";
+import { Loader2, LogOut, Bookmark } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -136,17 +137,12 @@ const Index = () => {
               </p>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
-              <a
-                href="https://lovable.dev/settings/workspace/usage"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors hidden sm:flex items-center gap-1"
-              >
-                <span>Credits</span>
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </a>
+              <Link to="/saved">
+                <Button variant="ghost" size="sm" className="flex items-center gap-1 px-2 sm:px-3">
+                  <Bookmark className="w-4 h-4" />
+                  <span className="text-xs hidden sm:inline">Saved</span>
+                </Button>
+              </Link>
               <Button
                 variant="ghost"
                 size="sm"

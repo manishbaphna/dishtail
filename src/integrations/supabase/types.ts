@@ -35,6 +35,54 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_recipes: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          ingredients: string[]
+          instructions: string[]
+          is_healthy: boolean | null
+          is_vegetarian: boolean | null
+          prep_time: string | null
+          serving_size: number | null
+          source: string | null
+          title: string
+          url: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          ingredients: string[]
+          instructions: string[]
+          is_healthy?: boolean | null
+          is_vegetarian?: boolean | null
+          prep_time?: string | null
+          serving_size?: number | null
+          source?: string | null
+          title: string
+          url?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          ingredients?: string[]
+          instructions?: string[]
+          is_healthy?: boolean | null
+          is_vegetarian?: boolean | null
+          prep_time?: string | null
+          serving_size?: number | null
+          source?: string | null
+          title?: string
+          url?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
