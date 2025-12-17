@@ -64,7 +64,16 @@ export const RecipeDisplay = ({
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        toast({ title: "Please sign in to save recipes", variant: "destructive" });
+        toast({ 
+          title: "Sign in to save recipes", 
+          description: "Create a free account to save your favorite recipes.",
+          action: (
+            <a href="/auth" className="text-primary underline text-sm">
+              Sign In
+            </a>
+          )
+        });
+        setIsSaving(false);
         return;
       }
 

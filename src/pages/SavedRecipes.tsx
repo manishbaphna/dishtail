@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Session, User } from "@supabase/supabase-js";
+import { User } from "@supabase/supabase-js";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, ArrowLeft, Trash2, Clock, Users, Leaf, Heart } from "lucide-react";
+import { Loader2, ArrowLeft, Trash2, Clock, Users, Leaf, Heart, LogIn } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface SavedRecipe {
@@ -33,21 +33,17 @@ const SavedRecipes = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setUser(session?.user ?? null);
-        if (!session) {
-          navigate("/auth");
-        }
+        setIsLoading(false);
       }
     );
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
-      if (!session) {
-        navigate("/auth");
-      }
+      setIsLoading(false);
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -56,7 +52,6 @@ const SavedRecipes = () => {
   }, [user]);
 
   const fetchSavedRecipes = async () => {
-    setIsLoading(true);
     try {
       const { data, error } = await supabase
         .from("saved_recipes")
@@ -67,8 +62,6 @@ const SavedRecipes = () => {
       setRecipes(data || []);
     } catch (error: any) {
       toast({ title: "Failed to load recipes", description: error.message, variant: "destructive" });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -90,6 +83,47 @@ const SavedRecipes = () => {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-12 h-12 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // Show login prompt if not authenticated
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background">
+        <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
+          <div className="container mx-auto px-4 py-3 sm:py-4">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="sm" onClick={() => navigate("/")}>
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+              <h1 className="text-xl sm:text-2xl font-bold">Saved Recipes</h1>
+            </div>
+          </div>
+        </header>
+
+        <main className="container mx-auto px-4 py-12 max-w-md text-center">
+          <div className="space-y-6">
+            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+              <LogIn className="w-8 h-8 text-primary" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold mb-2">Sign in to Save Recipes</h2>
+              <p className="text-muted-foreground">
+                Create a free account to save your favorite recipes and access them anytime.
+              </p>
+            </div>
+            <div className="space-y-3">
+              <Link to="/auth">
+                <Button className="w-full">Sign In / Sign Up</Button>
+              </Link>
+              <Button variant="outline" className="w-full" onClick={() => navigate("/")}>
+                Continue Browsing
+              </Button>
+            </div>
+          </div>
+        </main>
       </div>
     );
   }

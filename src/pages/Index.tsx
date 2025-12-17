@@ -1,64 +1,50 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Session, User } from "@supabase/supabase-js";
+import { User } from "@supabase/supabase-js";
 import { IngredientInput } from "@/components/IngredientInput";
 import { RecipeDisplay } from "@/components/RecipeDisplay";
 import { searchRecipes } from "@/utils/recipeSearch";
 import { Recipe } from "@/types/recipe";
-import { Loader2, LogOut, Bookmark } from "lucide-react";
+import { Loader2, ChefHat, Sparkles, Clock, Leaf, Search, Bookmark, LogIn, LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Card, CardContent } from "@/components/ui/card";
+
+const sampleRecipes = [
+  { name: "Tomato Pasta", ingredients: ["tomatoes", "pasta", "garlic", "olive oil"] },
+  { name: "Chicken Stir Fry", ingredients: ["chicken", "bell pepper", "soy sauce", "ginger"] },
+  { name: "Vegetable Curry", ingredients: ["potatoes", "chickpeas", "coconut milk", "curry powder"] },
+];
+
+const features = [
+  { icon: Search, title: "Smart Recipe Matching", description: "Enter your ingredients and get recipes that use all of them" },
+  { icon: Leaf, title: "Healthy Options First", description: "We prioritize vegetarian and healthy recipes automatically" },
+  { icon: Clock, title: "Quick & Easy", description: "Recipes sorted by prep time so you can cook faster" },
+  { icon: Sparkles, title: "Nutrition Analysis", description: "Get detailed calorie and nutrient information for any recipe" },
+];
 
 const Index = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [currentRecipeIndex, setCurrentRecipeIndex] = useState(0);
   const [servingSize, setServingSize] = useState(1);
-  const navigate = useNavigate();
-  const { toast } = useToast();
+  const [hasSearched, setHasSearched] = useState(false);
 
   useEffect(() => {
-    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        setSession(session);
         setUser(session?.user ?? null);
-        setIsCheckingAuth(false);
-        
-        if (!session) {
-          navigate("/auth");
-        }
       }
     );
-
-    // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
       setUser(session?.user ?? null);
-      setIsCheckingAuth(false);
-      
-      if (!session) {
-        navigate("/auth");
-      }
     });
-
     return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    toast({
-      title: "Signed out",
-      description: "You've been signed out successfully.",
-    });
-    navigate("/auth");
-  };
+  }, []);
+  const { toast } = useToast();
 
   const handleSearch = async (cuisine: string, size: number) => {
     if (ingredients.length === 0) {
@@ -74,6 +60,7 @@ const Index = () => {
     setRecipes([]);
     setCurrentRecipeIndex(0);
     setServingSize(size);
+    setHasSearched(true);
 
     try {
       const results = await searchRecipes(ingredients, cuisine, size);
@@ -106,88 +93,193 @@ const Index = () => {
     }
   };
 
-  if (isCheckingAuth) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto" />
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
+  const handleSampleSearch = (recipeIngredients: string[]) => {
+    setIngredients(recipeIngredients);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
-  if (!user) {
-    return null;
-  }
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    toast({ title: "Signed out successfully" });
+  };
 
   const selectedRecipe = recipes[currentRecipeIndex];
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Hero Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-3 sm:py-4">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0 flex-1">
-              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-warm bg-clip-text text-transparent">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-warm bg-clip-text text-transparent flex items-center gap-2">
+                <ChefHat className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
                 Dishtail
               </h1>
-              <p className="text-muted-foreground text-xs sm:text-sm mt-1 line-clamp-2">
-                Tell us ingredients you fancy and we'll find a recipe for you
+              <p className="text-muted-foreground text-xs sm:text-sm mt-1">
+                Find Recipes by Ingredients
               </p>
             </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex items-center gap-2">
               <Link to="/saved">
-                <Button variant="ghost" size="sm" className="flex items-center gap-1 px-2 sm:px-3">
+                <Button variant="ghost" size="sm" className="flex items-center gap-1">
                   <Bookmark className="w-4 h-4" />
-                  <span className="text-xs hidden sm:inline">Saved</span>
+                  <span className="hidden sm:inline">Saved</span>
                 </Button>
               </Link>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleSignOut}
-                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3"
-              >
-                <LogOut className="w-4 h-4" />
-                <span className="text-xs hidden sm:inline">Sign Out</span>
-              </Button>
+              {user ? (
+                <Button variant="ghost" size="sm" onClick={handleSignOut} className="flex items-center gap-1">
+                  <LogOut className="w-4 h-4" />
+                  <span className="hidden sm:inline">Sign Out</span>
+                </Button>
+              ) : (
+                <Link to="/auth">
+                  <Button variant="outline" size="sm" className="flex items-center gap-1">
+                    <LogIn className="w-4 h-4" />
+                    <span className="hidden sm:inline">Sign In</span>
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         </div>
       </header>
 
       <main className="container mx-auto px-4 py-4 sm:py-8 max-w-6xl">
-        <div className="space-y-6 sm:space-y-8">
-          <section className="bg-card rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-soft border border-border">
-            <IngredientInput
-              ingredients={ingredients}
-              setIngredients={setIngredients}
-              onSearch={handleSearch}
-              isSearching={isSearching}
-            />
+        {/* Hero Section - Only show before first search */}
+        {!hasSearched && (
+          <section className="text-center py-6 sm:py-10 mb-6 sm:mb-8">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">
+              Got Ingredients?
+              <br />
+              <span className="bg-gradient-warm bg-clip-text text-transparent">We'll Find the Recipe!</span>
+            </h2>
+            <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto mb-6">
+              Enter the ingredients you have on hand, and Dishtail will find delicious recipes 
+              that use <strong>all</strong> of them. No more wasted food!
+            </p>
           </section>
+        )}
 
-          {isSearching && (
-            <div className="flex justify-center items-center py-8 sm:py-12">
-              <div className="text-center space-y-4">
-                <Loader2 className="w-10 sm:w-12 h-10 sm:h-12 animate-spin text-primary mx-auto" />
-                <p className="text-muted-foreground text-sm sm:text-base">Searching for delicious recipes...</p>
-              </div>
+        {/* Search Section */}
+        <section className="bg-card rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-soft border border-border mb-6 sm:mb-8">
+          <IngredientInput
+            ingredients={ingredients}
+            setIngredients={setIngredients}
+            onSearch={handleSearch}
+            isSearching={isSearching}
+          />
+        </section>
+
+        {/* Loading State */}
+        {isSearching && (
+          <div className="flex justify-center items-center py-8 sm:py-12">
+            <div className="text-center space-y-4">
+              <Loader2 className="w-10 sm:w-12 h-10 sm:h-12 animate-spin text-primary mx-auto" />
+              <p className="text-muted-foreground text-sm sm:text-base">Searching for delicious recipes...</p>
             </div>
-          )}
+          </div>
+        )}
 
-          {!isSearching && selectedRecipe && recipes.length > 0 && (
-            <RecipeDisplay
-              selectedRecipe={selectedRecipe}
-              recipes={recipes}
-              currentIndex={currentRecipeIndex}
-              onNavigate={handleNavigate}
-              servingSize={servingSize}
-            />
-          )}
-        </div>
+        {/* Recipe Results */}
+        {!isSearching && selectedRecipe && recipes.length > 0 && (
+          <RecipeDisplay
+            selectedRecipe={selectedRecipe}
+            recipes={recipes}
+            currentIndex={currentRecipeIndex}
+            onNavigate={handleNavigate}
+            servingSize={servingSize}
+          />
+        )}
+
+        {/* Features Section - Only show before search */}
+        {!hasSearched && (
+          <>
+            <section className="py-8 sm:py-12">
+              <h3 className="text-xl sm:text-2xl font-semibold text-center mb-6 sm:mb-8 text-foreground">
+                How Dishtail Works
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                {features.map((feature, index) => (
+                  <Card key={index} className="bg-card border-border hover:shadow-md transition-shadow">
+                    <CardContent className="p-4 sm:p-6 text-center">
+                      <feature.icon className="w-10 h-10 text-primary mx-auto mb-3" />
+                      <h4 className="font-semibold text-foreground mb-2">{feature.title}</h4>
+                      <p className="text-muted-foreground text-sm">{feature.description}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </section>
+
+            {/* Sample Searches Section */}
+            <section className="py-8 sm:py-12 border-t border-border">
+              <h3 className="text-xl sm:text-2xl font-semibold text-center mb-2 text-foreground">
+                Try These Popular Searches
+              </h3>
+              <p className="text-muted-foreground text-center mb-6 sm:mb-8">
+                Click on any example to auto-fill ingredients and start searching
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                {sampleRecipes.map((recipe, index) => (
+                  <Card 
+                    key={index} 
+                    className="bg-card border-border hover:border-primary/50 cursor-pointer transition-all hover:shadow-md"
+                    onClick={() => handleSampleSearch(recipe.ingredients)}
+                  >
+                    <CardContent className="p-4 sm:p-6">
+                      <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                        <ChefHat className="w-5 h-5 text-primary" />
+                        {recipe.name}
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {recipe.ingredients.map((ing, i) => (
+                          <span 
+                            key={i}
+                            className="px-2 py-1 bg-secondary text-secondary-foreground text-xs rounded-full"
+                          >
+                            {ing}
+                          </span>
+                        ))}
+                      </div>
+                      <Button variant="ghost" size="sm" className="w-full mt-4 text-primary">
+                        Try this search →
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </section>
+
+            {/* SEO Content Section */}
+            <section className="py-8 sm:py-12 border-t border-border">
+              <div className="max-w-3xl mx-auto text-center">
+                <h3 className="text-xl sm:text-2xl font-semibold mb-4 text-foreground">
+                  Your Personal Recipe Finder
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  Dishtail is your smart kitchen companion that transforms the ingredients in your pantry 
+                  into delicious meals. Simply enter what you have—whether it's chicken, tomatoes, pasta, 
+                  or any combination—and we'll find recipes that use exactly those ingredients.
+                </p>
+                <p className="text-muted-foreground">
+                  Our intelligent search prioritizes <strong>healthy</strong> and <strong>vegetarian</strong> options, 
+                  sorts by <strong>prep time</strong> so you can cook quickly, and even provides 
+                  <strong> nutrition analysis</strong> for health-conscious cooks. Stop wasting food and 
+                  start cooking smarter with Dishtail!
+                </p>
+              </div>
+            </section>
+          </>
+        )}
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-border py-6 mt-8">
+        <div className="container mx-auto px-4 text-center text-muted-foreground text-sm">
+          <p>© {new Date().getFullYear()} Dishtail — Find Recipes by Ingredients</p>
+        </div>
+      </footer>
     </div>
   );
 };
