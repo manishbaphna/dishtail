@@ -67,12 +67,14 @@ export const IngredientInput = ({
   return (
     <div className="space-y-6">
       <div>
-        <label className="text-sm font-medium text-foreground block mb-2">
-          What ingredients do you have?
-        </label>
-        <p className="text-xs text-muted-foreground mb-3">
-          Type one ingredient at a time and press <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs font-mono">Enter</kbd> or click <span className="font-medium">Add</span> to build your list
-        </p>
+        <div className="flex items-center gap-2 mb-3">
+          <label className="text-sm font-medium text-foreground">
+            Add ingredients
+          </label>
+          <span className="text-xs text-muted-foreground">
+            (press Enter to add each)
+          </span>
+        </div>
         <div className="flex gap-2">
           <Input
             value={inputValue}

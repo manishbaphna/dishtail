@@ -294,12 +294,12 @@ const Index = () => {
             <section className="py-8 sm:py-12 border-t border-border">
               <div className="text-center mb-8">
                 <h3 className="text-xl sm:text-2xl font-semibold mb-2 text-foreground flex items-center justify-center gap-2">
-                  <Globe className="w-6 h-6 text-primary" />
-                  Explore New Culinary Worlds
+                  <Sparkles className="w-6 h-6 text-primary" />
+                  Discover Surprise Cuisines
                 </h3>
                 <p className="text-muted-foreground max-w-2xl mx-auto">
-                  Discover surprising recipes from around the globe. Did you know your everyday ingredients 
-                  can create dishes from cuisines you never imagined?
+                  What if your everyday ingredients could create dishes from unexpected cuisines? 
+                  Indian dishes with avocado? Chinese recipes with chickpeas? Prepare to be surprised!
                 </p>
               </div>
               
