@@ -6,10 +6,11 @@ import App from "./App.tsx";
 import "./index.css";
 
 const container = document.getElementById("root")!;
+const basename = import.meta.env.BASE_URL === "/dishtail/" ? "/dishtail" : "/";
 
 createRoot(container).render(
   <React.StrictMode>
-    <BrowserRouter basename="/dishtail">
+    <BrowserRouter basename={basename}>
       <App />
     </BrowserRouter>
   </React.StrictMode>
