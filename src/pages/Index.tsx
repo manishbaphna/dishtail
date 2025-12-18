@@ -187,20 +187,10 @@ const Index = () => {
               <span className="bg-gradient-warm bg-clip-text text-transparent">Find Your Perfect Dish!</span>
             </h2>
             <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto mb-6">
-              Solve your ingredient cravings! Enter what you have, and Dishtail finds recipes 
-              that use <strong>all</strong> of them. Plus, explore cuisines from around the world!
+              Solve your ingredient cravings! Enter what you have, and Dishtail spins it into bold, cross-cuisine 
+              recipes that use <strong>all</strong> of them. Plus, explore 'surprise' cuisines you never heard of—like 
+              Chinese recipes starring Indian chickpeas, Avocado-based Indian dishes, or Continental dishes with Paneer.
             </p>
-            <div className="flex flex-wrap justify-center gap-3 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1 bg-secondary/50 px-3 py-1 rounded-full">
-                <Search className="w-4 h-4" /> Find recipes by ingredients
-              </span>
-              <span className="flex items-center gap-1 bg-secondary/50 px-3 py-1 rounded-full">
-                <Globe className="w-4 h-4" /> Explore world cuisines
-              </span>
-              <span className="flex items-center gap-1 bg-secondary/50 px-3 py-1 rounded-full">
-                <Lightbulb className="w-4 h-4" /> Discover new ideas
-              </span>
-            </div>
           </section>
         )}
 
@@ -238,57 +228,7 @@ const Index = () => {
         {/* Content Sections - Only show before search */}
         {!hasSearched && (
           <>
-            {/* Sample Searches Section */}
-            <section className="py-8 sm:py-12">
-              <h3 className="text-xl sm:text-2xl font-semibold text-center mb-2 text-foreground">
-                Try These Popular Searches
-              </h3>
-              <p className="text-muted-foreground text-center mb-6 sm:mb-8">
-                Click on any dish to auto-fill ingredients and start searching
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-                {sampleRecipes.map((recipe, index) => (
-                  <Card 
-                    key={index} 
-                    className="bg-card border-border hover:border-primary/50 cursor-pointer transition-all hover:shadow-lg overflow-hidden group"
-                    onClick={() => handleSampleSearch(recipe.ingredients)}
-                  >
-                    <div className="relative h-40 overflow-hidden">
-                      <img 
-                        src={recipe.image} 
-                        alt={recipe.name}
-                        className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                      <h4 className="absolute bottom-3 left-4 right-4 font-semibold text-white text-lg flex items-center gap-2">
-                        <ChefHat className="w-5 h-5" />
-                        {recipe.name}
-                      </h4>
-                    </div>
-                    <CardContent className="p-4">
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        {recipe.ingredients.slice(0, 4).map((ing, i) => (
-                          <span 
-                            key={i}
-                            className="px-2 py-1 bg-secondary text-secondary-foreground text-xs rounded-full"
-                          >
-                            {ing}
-                          </span>
-                        ))}
-                        {recipe.ingredients.length > 4 && (
-                          <span className="px-2 py-1 bg-muted text-muted-foreground text-xs rounded-full">
-                            +{recipe.ingredients.length - 4} more
-                          </span>
-                        )}
-                      </div>
-                      <Button variant="ghost" size="sm" className="w-full text-primary group-hover:bg-primary/10">
-                        Try this search <ArrowRight className="w-4 h-4 ml-1" />
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </section>
+
 
             {/* Cuisine Exploration Section */}
             <section className="py-8 sm:py-12 border-t border-border">
