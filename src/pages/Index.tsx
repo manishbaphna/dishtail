@@ -6,15 +6,47 @@ import { IngredientInput } from "@/components/IngredientInput";
 import { RecipeDisplay } from "@/components/RecipeDisplay";
 import { searchRecipes } from "@/utils/recipeSearch";
 import { Recipe } from "@/types/recipe";
-import { Loader2, ChefHat, Sparkles, Clock, Leaf, Search, Bookmark, LogIn, LogOut } from "lucide-react";
+import { Loader2, ChefHat, Sparkles, Clock, Leaf, Search, Bookmark, LogIn, LogOut, Globe, Lightbulb, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
+// Import dish images
+import bombaySandwichImg from "@/assets/bombay-sandwich.jpg";
+import chickenTikkaMasalaImg from "@/assets/chicken-tikka-masala.jpg";
+import mexicanQuesadillaImg from "@/assets/mexican-quesadilla.jpg";
+import leftoverChapatiImg from "@/assets/leftover-chapati.jpg";
+import avocadoJapaneseImg from "@/assets/avocado-japanese.jpg";
+import chineseChickpeasImg from "@/assets/chinese-chickpeas.jpg";
+
 const sampleRecipes = [
-  { name: "Tomato Pasta", ingredients: ["tomatoes", "pasta", "garlic", "olive oil"] },
-  { name: "Chicken Stir Fry", ingredients: ["chicken", "bell pepper", "soy sauce", "ginger"] },
-  { name: "Vegetable Curry", ingredients: ["potatoes", "chickpeas", "coconut milk", "curry powder"] },
+  { name: "Bombay Sandwich", ingredients: ["bread", "potato", "tomato", "cucumber", "green chutney"], image: bombaySandwichImg },
+  { name: "Chicken Tikka Masala", ingredients: ["chicken", "yogurt", "tomato", "cream", "garam masala"], image: chickenTikkaMasalaImg },
+  { name: "Mexican Quesadilla", ingredients: ["tortilla", "cheese", "chicken", "bell pepper", "onion"], image: mexicanQuesadillaImg },
+];
+
+const cuisineExplorations = [
+  { 
+    title: "Leftover Chapati Magic", 
+    description: "Did you know there are 12+ delicious recipes you can make with leftover chapatis or rotis? From crispy chips to savory rolls!",
+    image: leftoverChapatiImg,
+    searchIngredients: ["chapati", "onion", "vegetables"],
+    highlight: "12+ recipes"
+  },
+  { 
+    title: "Avocado Goes Japanese", 
+    description: "Avocado isn't just for guacamole! Discover how it's used in Japanese cuisine - from sushi rolls to creamy onigiri fillings.",
+    image: avocadoJapaneseImg,
+    searchIngredients: ["avocado", "rice", "nori"],
+    highlight: "Japanese fusion"
+  },
+  { 
+    title: "Chickpeas in Chinese Cuisine", 
+    description: "Surprised? Chickpeas are used in authentic Chinese dishes! Explore stir-fries, soups, and more.",
+    image: chineseChickpeasImg,
+    searchIngredients: ["chickpeas", "soy sauce", "ginger"],
+    highlight: "Unexpected twist"
+  },
 ];
 
 const features = [
@@ -152,12 +184,23 @@ const Index = () => {
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">
               Got Ingredients?
               <br />
-              <span className="bg-gradient-warm bg-clip-text text-transparent">We'll Find the Recipe!</span>
+              <span className="bg-gradient-warm bg-clip-text text-transparent">Find Your Perfect Dish!</span>
             </h2>
             <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto mb-6">
-              Enter the ingredients you have on hand, and Dishtail will find delicious recipes 
-              that use <strong>all</strong> of them. No more wasted food!
+              Solve your ingredient cravings! Enter what you have, and Dishtail finds recipes 
+              that use <strong>all</strong> of them. Plus, explore cuisines from around the world!
             </p>
+            <div className="flex flex-wrap justify-center gap-3 text-sm text-muted-foreground">
+              <span className="flex items-center gap-1 bg-secondary/50 px-3 py-1 rounded-full">
+                <Search className="w-4 h-4" /> Find recipes by ingredients
+              </span>
+              <span className="flex items-center gap-1 bg-secondary/50 px-3 py-1 rounded-full">
+                <Globe className="w-4 h-4" /> Explore world cuisines
+              </span>
+              <span className="flex items-center gap-1 bg-secondary/50 px-3 py-1 rounded-full">
+                <Lightbulb className="w-4 h-4" /> Discover new ideas
+              </span>
+            </div>
           </section>
         )}
 
@@ -192,10 +235,111 @@ const Index = () => {
           />
         )}
 
-        {/* Features Section - Only show before search */}
+        {/* Content Sections - Only show before search */}
         {!hasSearched && (
           <>
+            {/* Sample Searches Section */}
             <section className="py-8 sm:py-12">
+              <h3 className="text-xl sm:text-2xl font-semibold text-center mb-2 text-foreground">
+                Try These Popular Searches
+              </h3>
+              <p className="text-muted-foreground text-center mb-6 sm:mb-8">
+                Click on any dish to auto-fill ingredients and start searching
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                {sampleRecipes.map((recipe, index) => (
+                  <Card 
+                    key={index} 
+                    className="bg-card border-border hover:border-primary/50 cursor-pointer transition-all hover:shadow-lg overflow-hidden group"
+                    onClick={() => handleSampleSearch(recipe.ingredients)}
+                  >
+                    <div className="relative h-40 overflow-hidden">
+                      <img 
+                        src={recipe.image} 
+                        alt={recipe.name}
+                        className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                      <h4 className="absolute bottom-3 left-4 right-4 font-semibold text-white text-lg flex items-center gap-2">
+                        <ChefHat className="w-5 h-5" />
+                        {recipe.name}
+                      </h4>
+                    </div>
+                    <CardContent className="p-4">
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {recipe.ingredients.slice(0, 4).map((ing, i) => (
+                          <span 
+                            key={i}
+                            className="px-2 py-1 bg-secondary text-secondary-foreground text-xs rounded-full"
+                          >
+                            {ing}
+                          </span>
+                        ))}
+                        {recipe.ingredients.length > 4 && (
+                          <span className="px-2 py-1 bg-muted text-muted-foreground text-xs rounded-full">
+                            +{recipe.ingredients.length - 4} more
+                          </span>
+                        )}
+                      </div>
+                      <Button variant="ghost" size="sm" className="w-full text-primary group-hover:bg-primary/10">
+                        Try this search <ArrowRight className="w-4 h-4 ml-1" />
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </section>
+
+            {/* Cuisine Exploration Section */}
+            <section className="py-8 sm:py-12 border-t border-border">
+              <div className="text-center mb-8">
+                <h3 className="text-xl sm:text-2xl font-semibold mb-2 text-foreground flex items-center justify-center gap-2">
+                  <Globe className="w-6 h-6 text-primary" />
+                  Explore New Culinary Worlds
+                </h3>
+                <p className="text-muted-foreground max-w-2xl mx-auto">
+                  Discover surprising recipes from around the globe. Did you know your everyday ingredients 
+                  can create dishes from cuisines you never imagined?
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {cuisineExplorations.map((exploration, index) => (
+                  <Card 
+                    key={index}
+                    className="bg-card border-border overflow-hidden hover:shadow-lg transition-all cursor-pointer group"
+                    onClick={() => handleSampleSearch(exploration.searchIngredients)}
+                  >
+                    <div className="relative h-48 overflow-hidden">
+                      <img 
+                        src={exploration.image} 
+                        alt={exploration.title}
+                        className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                      <span className="absolute top-3 right-3 px-3 py-1 bg-primary text-primary-foreground text-xs font-medium rounded-full">
+                        {exploration.highlight}
+                      </span>
+                      <h4 className="absolute bottom-3 left-4 right-4 font-bold text-white text-lg">
+                        {exploration.title}
+                      </h4>
+                    </div>
+                    <CardContent className="p-4">
+                      <p className="text-sm text-muted-foreground mb-4">
+                        {exploration.description}
+                      </p>
+                      <Button variant="outline" size="sm" className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                        <Lightbulb className="w-4 h-4 mr-2" />
+                        Explore Recipes
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </section>
+
+            {/* Features Section */}
+            <section className="py-8 sm:py-12 border-t border-border">
               <h3 className="text-xl sm:text-2xl font-semibold text-center mb-6 sm:mb-8 text-foreground">
                 How Dishtail Works
               </h3>
@@ -212,61 +356,27 @@ const Index = () => {
               </div>
             </section>
 
-            {/* Sample Searches Section */}
-            <section className="py-8 sm:py-12 border-t border-border">
-              <h3 className="text-xl sm:text-2xl font-semibold text-center mb-2 text-foreground">
-                Try These Popular Searches
-              </h3>
-              <p className="text-muted-foreground text-center mb-6 sm:mb-8">
-                Click on any example to auto-fill ingredients and start searching
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-                {sampleRecipes.map((recipe, index) => (
-                  <Card 
-                    key={index} 
-                    className="bg-card border-border hover:border-primary/50 cursor-pointer transition-all hover:shadow-md"
-                    onClick={() => handleSampleSearch(recipe.ingredients)}
-                  >
-                    <CardContent className="p-4 sm:p-6">
-                      <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-                        <ChefHat className="w-5 h-5 text-primary" />
-                        {recipe.name}
-                      </h4>
-                      <div className="flex flex-wrap gap-2">
-                        {recipe.ingredients.map((ing, i) => (
-                          <span 
-                            key={i}
-                            className="px-2 py-1 bg-secondary text-secondary-foreground text-xs rounded-full"
-                          >
-                            {ing}
-                          </span>
-                        ))}
-                      </div>
-                      <Button variant="ghost" size="sm" className="w-full mt-4 text-primary">
-                        Try this search →
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </section>
-
             {/* SEO Content Section */}
             <section className="py-8 sm:py-12 border-t border-border">
               <div className="max-w-3xl mx-auto text-center">
                 <h3 className="text-xl sm:text-2xl font-semibold mb-4 text-foreground">
-                  Your Personal Recipe Finder
+                  Your Personal Recipe Finder & Cuisine Explorer
                 </h3>
                 <p className="text-muted-foreground mb-4">
                   Dishtail is your smart kitchen companion that transforms the ingredients in your pantry 
-                  into delicious meals. Simply enter what you have—whether it's chicken, tomatoes, pasta, 
-                  or any combination—and we'll find recipes that use exactly those ingredients.
+                  into delicious meals from around the world. Whether you have leftover rice, some chicken, 
+                  or just a few vegetables, we'll help you discover recipes you never knew existed.
+                </p>
+                <p className="text-muted-foreground mb-4">
+                  <strong>Solve ingredient cravings:</strong> Don't know what to cook? Just enter what you have, 
+                  and we'll show you the possibilities. <strong>Explore world cuisines:</strong> Learn how 
+                  your everyday ingredients are used in Indian, Japanese, Mexican, Chinese, and Mediterranean cooking.
                 </p>
                 <p className="text-muted-foreground">
                   Our intelligent search prioritizes <strong>healthy</strong> and <strong>vegetarian</strong> options, 
                   sorts by <strong>prep time</strong> so you can cook quickly, and even provides 
                   <strong> nutrition analysis</strong> for health-conscious cooks. Stop wasting food and 
-                  start cooking smarter with Dishtail!
+                  start your culinary adventure with Dishtail!
                 </p>
               </div>
             </section>
@@ -277,7 +387,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="border-t border-border py-6 mt-8">
         <div className="container mx-auto px-4 text-center text-muted-foreground text-sm">
-          <p>© {new Date().getFullYear()} Dishtail — Find Recipes by Ingredients</p>
+          <p>© {new Date().getFullYear()} Dishtail — Find Recipes by Ingredients | Explore World Cuisines</p>
         </div>
       </footer>
     </div>

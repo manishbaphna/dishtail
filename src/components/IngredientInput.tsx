@@ -68,23 +68,27 @@ export const IngredientInput = ({
     <div className="space-y-6">
       <div>
         <label className="text-sm font-medium text-foreground block mb-2">
-          Add your ingredients
+          What ingredients do you have?
         </label>
+        <p className="text-xs text-muted-foreground mb-3">
+          Type one ingredient at a time and press <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs font-mono">Enter</kbd> or click <span className="font-medium">Add</span> to build your list
+        </p>
         <div className="flex gap-2">
           <Input
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="e.g., tomatoes, pasta, garlic..."
+            placeholder="Type an ingredient (e.g., chicken)"
             className="flex-1"
           />
           <Button
             onClick={addIngredient}
             variant="outline"
-            size="icon"
             disabled={!inputValue.trim()}
+            className="gap-1"
           >
             <Plus className="w-4 h-4" />
+            <span className="hidden sm:inline">Add</span>
           </Button>
         </div>
       </div>
