@@ -4,14 +4,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { IngredientInput } from "@/components/IngredientInput";
 import { RecipeDisplay } from "@/components/RecipeDisplay";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { searchRecipes } from "@/utils/recipeSearch";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import { Recipe } from "@/types/recipe";
-import { Loader2, ChefHat, Sparkles, Clock, Leaf, Search, Bookmark, LogIn, LogOut, Globe, Lightbulb, ArrowRight } from "lucide-react";
+import { Loader2, Sparkles, Clock, Leaf, Search, Bookmark, LogIn, LogOut, Globe, Lightbulb, ArrowRight, Home } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-// Import dish images
+// Import logo and dish images
+import dishtailLogo from "@/assets/dishtail-logo.png";
 import bombaySandwichImg from "@/assets/bombay-sandwich.jpg";
 import chickenTikkaMasalaImg from "@/assets/chicken-tikka-masala.jpg";
 import mexicanQuesadillaImg from "@/assets/mexican-quesadilla.jpg";
@@ -64,6 +67,9 @@ const Index = () => {
   const [currentRecipeIndex, setCurrentRecipeIndex] = useState(0);
   const [servingSize, setServingSize] = useState(1);
   const [hasSearched, setHasSearched] = useState(false);
+  const [lastCuisine, setLastCuisine] = useState("");
+
+  const { trackSearch, trackRecipeView } = useAnalytics();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -93,6 +99,10 @@ const Index = () => {
     setCurrentRecipeIndex(0);
     setServingSize(size);
     setHasSearched(true);
+    setLastCuisine(cuisine);
+
+    // Track search analytics
+    trackSearch(ingredients, cuisine);
 
     try {
       const results = await searchRecipes(ingredients, cuisine, size);
@@ -135,6 +145,14 @@ const Index = () => {
     toast({ title: "Signed out successfully" });
   };
 
+  const handleNewSearch = () => {
+    setHasSearched(false);
+    setRecipes([]);
+    setIngredients([]);
+    setCurrentRecipeIndex(0);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const selectedRecipe = recipes[currentRecipeIndex];
 
   return (
@@ -143,16 +161,28 @@ const Index = () => {
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-warm bg-clip-text text-transparent flex items-center gap-2">
-                <ChefHat className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
-                Dishtail
-              </h1>
-              <p className="text-muted-foreground text-xs sm:text-sm mt-1">
-                Find Recipes by Ingredients
-              </p>
+            <div 
+              className="flex items-center gap-2 cursor-pointer" 
+              onClick={handleNewSearch}
+            >
+              <img src={dishtailLogo} alt="Dishtail" className="w-8 h-8 sm:w-10 sm:h-10 object-contain" />
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-warm bg-clip-text text-transparent">
+                  Dishtail
+                </h1>
+                <p className="text-muted-foreground text-xs sm:text-sm">
+                  Find Recipes by Ingredients
+                </p>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
+              {hasSearched && (
+                <Button variant="outline" size="sm" onClick={handleNewSearch} className="flex items-center gap-1">
+                  <Home className="w-4 h-4" />
+                  <span className="hidden sm:inline">New Search</span>
+                </Button>
+              )}
+              <ThemeSwitcher />
               <Link to="/saved">
                 <Button variant="ghost" size="sm" className="flex items-center gap-1">
                   <Bookmark className="w-4 h-4" />

@@ -102,9 +102,9 @@ export const RecipeDisplay = ({
   };
 
   const handleBuyIngredients = () => {
-    const ingredientsList = selectedRecipe.ingredients.join(", ");
-    const instacartUrl = `https://www.instacart.com/store/search/${encodeURIComponent(ingredientsList)}`;
-    window.open(instacartUrl, "_blank");
+    const ingredientsList = selectedRecipe.ingredients.join(" ");
+    const amazonUrl = `https://www.amazon.com/s?k=${encodeURIComponent(ingredientsList)}&i=amazonfresh`;
+    window.open(amazonUrl, "_blank");
   };
 
   const handleOrderFood = () => {
