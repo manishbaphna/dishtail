@@ -13,7 +13,7 @@ type Theme = "light" | "dark" | "festive";
 const themes = [
   { id: "light" as Theme, name: "Light", icon: Sun, description: "Warm orange" },
   { id: "dark" as Theme, name: "Dark", icon: Moon, description: "Dark mode" },
-  { id: "festive" as Theme, name: "Festive", icon: Sparkles, description: "Green & red" },
+  { id: "festive" as Theme, name: "Culinary", icon: Sparkles, description: "Kitchen vibes" },
 ];
 
 export const ThemeSwitcher = () => {
