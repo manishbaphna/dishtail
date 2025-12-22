@@ -357,7 +357,12 @@ const Index = () => {
       {/* Footer */}
       <footer className="border-t border-border py-6 mt-8">
         <div className="container mx-auto px-4 text-center text-muted-foreground text-sm">
-          <p>© {new Date().getFullYear()} Dishtail — Find Recipes by Ingredients | Explore World Cuisines</p>
+          <p className="mb-2">© {new Date().getFullYear()} Dishtail — Find Recipes by Ingredients | Explore World Cuisines</p>
+          <div className="flex justify-center gap-4">
+            <Link to="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+            <Link to="/terms" className="hover:text-primary transition-colors">Terms of Service</Link>
+            <Link to="/contact" className="hover:text-primary transition-colors">Contact Us</Link>
+          </div>
         </div>
       </footer>
     </div>

@@ -74,38 +74,39 @@ All colors MUST be HSL.
     --ring: 25 95% 53%;
   }
 
-  /* Festive theme - Green and Red */
+  /* Culinary theme - Warm kitchen colors with food-inspired palette */
   .theme-festive {
-    --background: 120 15% 97%;
-    --foreground: 0 25% 15%;
+    --background: 30 35% 96%;
+    --foreground: 20 30% 12%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 25% 15%;
+    --card: 40 30% 99%;
+    --card-foreground: 20 30% 12%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 25% 15%;
+    --popover: 40 30% 99%;
+    --popover-foreground: 20 30% 12%;
 
-    --primary: 0 72% 51%;
+    --primary: 15 75% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 120 30% 92%;
-    --secondary-foreground: 120 40% 20%;
+    --secondary: 45 55% 92%;
+    --secondary-foreground: 30 40% 20%;
 
-    --muted: 120 20% 94%;
-    --muted-foreground: 0 15% 45%;
+    --muted: 35 25% 93%;
+    --muted-foreground: 20 20% 40%;
 
-    --accent: 142 76% 36%;
+    --accent: 85 55% 45%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 120 20% 85%;
-    --input: 120 20% 85%;
-    --ring: 0 72% 51%;
+    --border: 35 30% 85%;
+    --input: 35 30% 85%;
+    --ring: 15 75% 50%;
 
-    --gradient-warm: linear-gradient(135deg, hsl(0 72% 51%), hsl(142 76% 36%));
-    --gradient-fresh: linear-gradient(135deg, hsl(142 76% 36%), hsl(120 60% 45%));
+    --gradient-warm: linear-gradient(135deg, hsl(15 75% 50%), hsl(35 80% 55%));
+    --gradient-fresh: linear-gradient(135deg, hsl(85 55% 45%), hsl(45 70% 55%));
+    --shadow-soft: 0 4px 20px -4px hsl(15 75% 50% / 0.2);
   }
 }
 
