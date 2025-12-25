@@ -230,7 +230,7 @@ const Index = () => {
         <div className="container mx-auto px-4 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 cursor-pointer" onClick={handleNewSearch}>
-              <img src={dishtailLogo} alt="Dishtail" className="w-12 h-12 sm:w-12 sm:h-12 object-contain" />
+              <img src={dishtailLogo} alt="Dishtail" className="w-16 h-16 sm:w-20 sm:h-20 object-contain" />
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-warm bg-clip-text text-transparent">
                   Dishtail
