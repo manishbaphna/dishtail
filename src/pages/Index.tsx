@@ -24,32 +24,46 @@ import avocadoJapaneseImg from "@/assets/avocado-japanese.jpg";
 import chineseChickpeasImg from "@/assets/chinese-chickpeas.jpg";
 
 const sampleRecipes = [
-  { name: "Bombay Sandwich", ingredients: ["bread", "potato", "tomato", "cucumber", "green chutney"], image: bombaySandwichImg },
-  { name: "Chicken Tikka Masala", ingredients: ["chicken", "yogurt", "tomato", "cream", "garam masala"], image: chickenTikkaMasalaImg },
-  { name: "Mexican Quesadilla", ingredients: ["tortilla", "cheese", "chicken", "bell pepper", "onion"], image: mexicanQuesadillaImg },
+  {
+    name: "Bombay Sandwich",
+    ingredients: ["bread", "potato", "tomato", "cucumber", "green chutney"],
+    image: bombaySandwichImg,
+  },
+  {
+    name: "Chicken Tikka Masala",
+    ingredients: ["chicken", "yogurt", "tomato", "cream", "garam masala"],
+    image: chickenTikkaMasalaImg,
+  },
+  {
+    name: "Mexican Quesadilla",
+    ingredients: ["tortilla", "cheese", "chicken", "bell pepper", "onion"],
+    image: mexicanQuesadillaImg,
+  },
 ];
 
 const cuisineExplorations = [
-  { 
-    title: "Leftover Chapati Magic", 
-    description: "Did you know there are 12+ delicious recipes you can make with leftover chapatis or rotis? From crispy chips to savory rolls!",
+  {
+    title: "Leftover Chapati Magic",
+    description:
+      "Did you know there are 12+ delicious recipes you can make with leftover chapatis or rotis? From crispy chips to savory rolls!",
     image: leftoverChapatiImg,
     searchIngredients: ["chapati", "onion", "vegetables"],
-    highlight: "12+ recipes"
+    highlight: "12+ recipes",
   },
-  { 
-    title: "Avocado Goes Japanese", 
-    description: "Avocado isn't just for guacamole! Discover how it's used in Japanese cuisine - from sushi rolls to creamy onigiri fillings.",
+  {
+    title: "Avocado Goes Japanese",
+    description:
+      "Avocado isn't just for guacamole! Discover how it's used in Japanese cuisine - from sushi rolls to creamy onigiri fillings.",
     image: avocadoJapaneseImg,
     searchIngredients: ["avocado", "rice", "nori"],
-    highlight: "Japanese fusion"
+    highlight: "Japanese fusion",
   },
-  { 
-    title: "Chickpeas in Chinese Cuisine", 
+  {
+    title: "Chickpeas in Chinese Cuisine",
     description: "Surprised? Chickpeas are used in authentic Chinese dishes! Explore stir-fries, soups, and more.",
     image: chineseChickpeasImg,
     searchIngredients: ["chickpeas", "soy sauce", "ginger"],
-    highlight: "Unexpected twist"
+    highlight: "Unexpected twist",
   },
 ];
 
@@ -57,7 +71,7 @@ const cuisineExplorations = [
 const getFeatureIcon = (index: number, isCulinary: boolean) => {
   const regularIcons = [Search, Leaf, Clock, Sparkles];
   const culinaryIcons = [MagicJarIcon, WeighScaleIcon, ClockWithPlateIcon, Sparkles];
-  
+
   if (isCulinary) {
     const CulinaryIcon = culinaryIcons[index];
     if (index < 3) {
@@ -65,7 +79,7 @@ const getFeatureIcon = (index: number, isCulinary: boolean) => {
     }
     return <Sparkles className="w-10 h-10 text-culinary-orange mx-auto mb-3" />;
   }
-  
+
   const RegularIcon = regularIcons[index];
   return <RegularIcon className="w-10 h-10 text-primary mx-auto mb-3" />;
 };
@@ -92,41 +106,41 @@ const Index = () => {
   // Check if culinary theme is active
   useEffect(() => {
     const checkTheme = () => {
-      setIsCulinaryTheme(document.documentElement.classList.contains('theme-festive'));
+      setIsCulinaryTheme(document.documentElement.classList.contains("theme-festive"));
     };
     checkTheme();
-    
+
     const observer = new MutationObserver(checkTheme);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+
     return () => observer.disconnect();
   }, []);
 
   // Click spark effect for culinary theme
   const handleClick = useCallback((e: MouseEvent) => {
-    if (!document.documentElement.classList.contains('theme-festive')) return;
-    
+    if (!document.documentElement.classList.contains("theme-festive")) return;
+
     const id = Date.now();
-    setSparks(prev => [...prev, { id, x: e.clientX, y: e.clientY }]);
-    
+    setSparks((prev) => [...prev, { id, x: e.clientX, y: e.clientY }]);
+
     setTimeout(() => {
-      setSparks(prev => prev.filter(spark => spark.id !== id));
+      setSparks((prev) => prev.filter((spark) => spark.id !== id));
     }, 400);
   }, []);
 
   useEffect(() => {
-    document.addEventListener('click', handleClick);
-    return () => document.removeEventListener('click', handleClick);
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
   }, [handleClick]);
 
   const { trackSearch, trackRecipeView } = useAnalytics();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setUser(session?.user ?? null);
-      }
-    );
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
     });
@@ -156,7 +170,7 @@ const Index = () => {
 
     try {
       const results = await searchRecipes(ingredients, cuisine, size);
-      
+
       if (results.length === 0) {
         toast({
           title: "No recipes found",
@@ -208,25 +222,20 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Spark effects for Culinary theme */}
-      {sparks.map(spark => (
+      {sparks.map((spark) => (
         <SparkEffect key={spark.id} x={spark.x} y={spark.y} />
       ))}
       {/* Hero Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <div 
-              className="flex items-center gap-2 cursor-pointer" 
-              onClick={handleNewSearch}
-            >
-              <img src={dishtailLogo} alt="Dishtail" className="w-8 h-8 sm:w-10 sm:h-10 object-contain" />
+            <div className="flex items-center gap-2 cursor-pointer" onClick={handleNewSearch}>
+              <img src={dishtailLogo} alt="Dishtail" className="w-12 h-12 sm:w-12 sm:h-12 object-contain" />
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-warm bg-clip-text text-transparent">
                   Dishtail
                 </h1>
-                <p className="text-muted-foreground text-xs sm:text-sm">
-                  Find Recipes by Ingredients
-                </p>
+                <p className="text-muted-foreground text-xs sm:text-sm">Find Recipes by Ingredients</p>
               </div>
             </div>
             <div className="flex items-center gap-1 sm:gap-2">
@@ -273,10 +282,12 @@ const Index = () => {
               <span className="bg-gradient-warm bg-clip-text text-transparent">Find Your Perfect Dish!</span>
             </h2>
             <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto mb-6">
-              Solve your ingredient cravings! Enter what you have, and Dishtail spins it into bold, cross-cuisine 
-              recipes that use <strong className={isCulinaryTheme ? "text-culinary-green" : ""}>all</strong> of them. 
-              Plus, explore <span className={isCulinaryTheme ? "text-culinary-orange font-medium" : ""}>'surprise' cuisines</span> you never heard of—like 
-              Chinese recipes starring Indian chickpeas, Avocado-based Indian dishes, or Continental dishes with Paneer.
+              Solve your ingredient cravings! Enter what you have, and Dishtail spins it into bold, cross-cuisine
+              recipes that use <strong className={isCulinaryTheme ? "text-culinary-green" : ""}>all</strong> of them.
+              Plus, explore{" "}
+              <span className={isCulinaryTheme ? "text-culinary-orange font-medium" : ""}>'surprise' cuisines</span> you
+              never heard of—like Chinese recipes starring Indian chickpeas, Avocado-based Indian dishes, or Continental
+              dishes with Paneer.
             </p>
           </section>
         )}
@@ -315,35 +326,44 @@ const Index = () => {
         {/* Content Sections - Only show before search */}
         {!hasSearched && (
           <>
-
-
             {/* Cuisine Exploration Section */}
             <section className="py-8 sm:py-12 border-t border-border">
               <div className="text-center mb-8">
-                <h3 className={`text-xl sm:text-2xl font-semibold mb-2 flex items-center justify-center gap-2 ${isCulinaryTheme ? 'text-culinary-orange' : 'text-foreground'}`}>
-                  <Sparkles className={`w-6 h-6 ${isCulinaryTheme ? 'text-culinary-red' : 'text-primary'}`} />
-                  <span className={isCulinaryTheme ? 'text-culinary-green' : ''}>Discover</span>{" "}
-                  <span className={isCulinaryTheme ? 'text-culinary-orange' : ''}>Surprise</span>{" "}
-                  <span className={isCulinaryTheme ? 'text-culinary-red' : ''}>Cuisines</span>
+                <h3
+                  className={`text-xl sm:text-2xl font-semibold mb-2 flex items-center justify-center gap-2 ${isCulinaryTheme ? "text-culinary-orange" : "text-foreground"}`}
+                >
+                  <Sparkles className={`w-6 h-6 ${isCulinaryTheme ? "text-culinary-red" : "text-primary"}`} />
+                  <span className={isCulinaryTheme ? "text-culinary-green" : ""}>Discover</span>{" "}
+                  <span className={isCulinaryTheme ? "text-culinary-orange" : ""}>Surprise</span>{" "}
+                  <span className={isCulinaryTheme ? "text-culinary-red" : ""}>Cuisines</span>
                 </h3>
                 <p className="text-muted-foreground max-w-2xl mx-auto">
-                  What if your everyday ingredients could create dishes from unexpected cuisines? 
-                  <span className={isCulinaryTheme ? " text-culinary-green font-medium" : ""}> Indian dishes with avocado?</span>
-                  <span className={isCulinaryTheme ? " text-culinary-orange font-medium" : ""}> Chinese recipes with chickpeas?</span>
-                  <span className={isCulinaryTheme ? " text-culinary-red font-medium" : ""}> Prepare to be surprised!</span>
+                  What if your everyday ingredients could create dishes from unexpected cuisines?
+                  <span className={isCulinaryTheme ? " text-culinary-green font-medium" : ""}>
+                    {" "}
+                    Indian dishes with avocado?
+                  </span>
+                  <span className={isCulinaryTheme ? " text-culinary-orange font-medium" : ""}>
+                    {" "}
+                    Chinese recipes with chickpeas?
+                  </span>
+                  <span className={isCulinaryTheme ? " text-culinary-red font-medium" : ""}>
+                    {" "}
+                    Prepare to be surprised!
+                  </span>
                 </p>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {cuisineExplorations.map((exploration, index) => (
-                  <Card 
+                  <Card
                     key={index}
                     className="bg-card border-border overflow-hidden hover:shadow-lg transition-all cursor-pointer group"
                     onClick={() => handleSampleSearch(exploration.searchIngredients)}
                   >
                     <div className="relative h-48 overflow-hidden">
-                      <img 
-                        src={exploration.image} 
+                      <img
+                        src={exploration.image}
                         alt={exploration.title}
                         className="w-full h-full object-cover transition-transform group-hover:scale-105"
                       />
@@ -356,10 +376,12 @@ const Index = () => {
                       </h4>
                     </div>
                     <CardContent className="p-4">
-                      <p className="text-sm text-muted-foreground mb-4">
-                        {exploration.description}
-                      </p>
-                      <Button variant="outline" size="sm" className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                      <p className="text-sm text-muted-foreground mb-4">{exploration.description}</p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
+                      >
                         <Lightbulb className="w-4 h-4 mr-2" />
                         Explore Recipes
                       </Button>
@@ -370,17 +392,21 @@ const Index = () => {
             </section>
 
             <section className="py-8 sm:py-12 border-t border-border">
-              <h3 className={`text-xl sm:text-2xl font-semibold text-center mb-6 sm:mb-8 ${isCulinaryTheme ? '' : 'text-foreground'}`}>
-                <span className={isCulinaryTheme ? 'text-culinary-red' : ''}>How </span>
-                <span className={isCulinaryTheme ? 'text-culinary-green' : ''}>Dishtail </span>
-                <span className={isCulinaryTheme ? 'text-culinary-orange' : ''}>Works</span>
+              <h3
+                className={`text-xl sm:text-2xl font-semibold text-center mb-6 sm:mb-8 ${isCulinaryTheme ? "" : "text-foreground"}`}
+              >
+                <span className={isCulinaryTheme ? "text-culinary-red" : ""}>How </span>
+                <span className={isCulinaryTheme ? "text-culinary-green" : ""}>Dishtail </span>
+                <span className={isCulinaryTheme ? "text-culinary-orange" : ""}>Works</span>
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 {features.map((feature, index) => (
                   <Card key={index} className="bg-card border-border hover:shadow-md transition-shadow">
                     <CardContent className="p-4 sm:p-6 text-center">
                       {getFeatureIcon(index, isCulinaryTheme)}
-                      <h4 className={`font-semibold mb-2 ${isCulinaryTheme ? (index % 3 === 0 ? 'text-culinary-red' : index % 3 === 1 ? 'text-culinary-green' : 'text-culinary-orange') : 'text-foreground'}`}>
+                      <h4
+                        className={`font-semibold mb-2 ${isCulinaryTheme ? (index % 3 === 0 ? "text-culinary-red" : index % 3 === 1 ? "text-culinary-green" : "text-culinary-orange") : "text-foreground"}`}
+                      >
                         {feature.title}
                       </h4>
                       <p className="text-muted-foreground text-sm">{feature.description}</p>
@@ -397,20 +423,20 @@ const Index = () => {
                   Your Personal Recipe Finder & Cuisine Explorer
                 </h3>
                 <p className="text-muted-foreground mb-4">
-                  Dishtail is your smart kitchen companion that transforms the ingredients in your pantry 
-                  into delicious meals from around the world. Whether you have leftover rice, some chicken, 
-                  or just a few vegetables, we'll help you discover recipes you never knew existed.
+                  Dishtail is your smart kitchen companion that transforms the ingredients in your pantry into delicious
+                  meals from around the world. Whether you have leftover rice, some chicken, or just a few vegetables,
+                  we'll help you discover recipes you never knew existed.
                 </p>
                 <p className="text-muted-foreground mb-4">
-                  <strong>Solve ingredient cravings:</strong> Don't know what to cook? Just enter what you have, 
-                  and we'll show you the possibilities. <strong>Explore world cuisines:</strong> Learn how 
-                  your everyday ingredients are used in Indian, Japanese, Mexican, Chinese, and Mediterranean cooking.
+                  <strong>Solve ingredient cravings:</strong> Don't know what to cook? Just enter what you have, and
+                  we'll show you the possibilities. <strong>Explore world cuisines:</strong> Learn how your everyday
+                  ingredients are used in Indian, Japanese, Mexican, Chinese, and Mediterranean cooking.
                 </p>
                 <p className="text-muted-foreground">
-                  Our intelligent search prioritizes <strong>healthy</strong> and <strong>vegetarian</strong> options, 
-                  sorts by <strong>prep time</strong> so you can cook quickly, and even provides 
-                  <strong> nutrition analysis</strong> for health-conscious cooks. Stop wasting food and 
-                  start your culinary adventure with Dishtail!
+                  Our intelligent search prioritizes <strong>healthy</strong> and <strong>vegetarian</strong> options,
+                  sorts by <strong>prep time</strong> so you can cook quickly, and even provides
+                  <strong> nutrition analysis</strong> for health-conscious cooks. Stop wasting food and start your
+                  culinary adventure with Dishtail!
                 </p>
               </div>
             </section>
@@ -421,11 +447,19 @@ const Index = () => {
       {/* Footer */}
       <footer className="border-t border-border py-6 mt-8">
         <div className="container mx-auto px-4 text-center text-muted-foreground text-sm">
-          <p className="mb-2">© {new Date().getFullYear()} Dishtail — Find Recipes by Ingredients | Explore World Cuisines</p>
+          <p className="mb-2">
+            © {new Date().getFullYear()} Dishtail — Find Recipes by Ingredients | Explore World Cuisines
+          </p>
           <div className="flex justify-center gap-4">
-            <Link to="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
-            <Link to="/terms" className="hover:text-primary transition-colors">Terms of Service</Link>
-            <Link to="/contact" className="hover:text-primary transition-colors">Contact Us</Link>
+            <Link to="/privacy" className="hover:text-primary transition-colors">
+              Privacy Policy
+            </Link>
+            <Link to="/terms" className="hover:text-primary transition-colors">
+              Terms of Service
+            </Link>
+            <Link to="/contact" className="hover:text-primary transition-colors">
+              Contact Us
+            </Link>
           </div>
         </div>
       </footer>
