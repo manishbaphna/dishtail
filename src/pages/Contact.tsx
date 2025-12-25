@@ -189,10 +189,7 @@ const Contact = () => {
 
         <div className="mt-8 text-center text-muted-foreground text-sm">
           <p>
-            You can also reach us directly at{" "}
-            <a href="mailto:manish.baphna@gmail.com" className="text-primary hover:underline">
-              manish.baphna@gmail.com
-            </a>
+            We typically respond within 24-48 hours.
           </p>
         </div>
       </main>

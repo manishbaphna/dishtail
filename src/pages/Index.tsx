@@ -1,20 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { IngredientInput } from "@/components/IngredientInput";
 import { RecipeDisplay } from "@/components/RecipeDisplay";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { ClockWithPlateIcon, WeighScaleIcon, MagicJarIcon, SparkEffect } from "@/components/CulinaryIcons";
 import { searchRecipes } from "@/utils/recipeSearch";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { Recipe } from "@/types/recipe";
-import { Loader2, Sparkles, Clock, Leaf, Search, Bookmark, LogIn, LogOut, Globe, Lightbulb, ArrowRight, Home } from "lucide-react";
+import { Loader2, Sparkles, Clock, Leaf, Search, Bookmark, LogIn, LogOut, Lightbulb, Home } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 // Import logo and dish images
-import dishtailLogo from "@/assets/dishtail-logo.png";
+import dishtailLogo from "@/assets/dishtail-logo.jpg";
 import bombaySandwichImg from "@/assets/bombay-sandwich.jpg";
 import chickenTikkaMasalaImg from "@/assets/chicken-tikka-masala.jpg";
 import mexicanQuesadillaImg from "@/assets/mexican-quesadilla.jpg";
@@ -52,11 +53,28 @@ const cuisineExplorations = [
   },
 ];
 
+// Features with both regular and culinary-themed icons
+const getFeatureIcon = (index: number, isCulinary: boolean) => {
+  const regularIcons = [Search, Leaf, Clock, Sparkles];
+  const culinaryIcons = [MagicJarIcon, WeighScaleIcon, ClockWithPlateIcon, Sparkles];
+  
+  if (isCulinary) {
+    const CulinaryIcon = culinaryIcons[index];
+    if (index < 3) {
+      return <CulinaryIcon className="w-12 h-12 mx-auto mb-3" />;
+    }
+    return <Sparkles className="w-10 h-10 text-culinary-orange mx-auto mb-3" />;
+  }
+  
+  const RegularIcon = regularIcons[index];
+  return <RegularIcon className="w-10 h-10 text-primary mx-auto mb-3" />;
+};
+
 const features = [
-  { icon: Search, title: "Smart Recipe Matching", description: "Enter your ingredients and get recipes that use all of them" },
-  { icon: Leaf, title: "Healthy Options First", description: "We prioritize vegetarian and healthy recipes automatically" },
-  { icon: Clock, title: "Quick & Easy", description: "Recipes sorted by prep time so you can cook faster" },
-  { icon: Sparkles, title: "Nutrition Analysis", description: "Get detailed calorie and nutrient information for any recipe" },
+  { title: "Smart Recipe Matching", description: "Enter your ingredients and get recipes that use all of them" },
+  { title: "Healthy Options First", description: "We prioritize vegetarian and healthy recipes automatically" },
+  { title: "Quick & Easy", description: "Recipes sorted by prep time so you can cook faster" },
+  { title: "Nutrition Analysis", description: "Get detailed calorie and nutrient information for any recipe" },
 ];
 
 const Index = () => {
@@ -68,6 +86,38 @@ const Index = () => {
   const [servingSize, setServingSize] = useState(1);
   const [hasSearched, setHasSearched] = useState(false);
   const [lastCuisine, setLastCuisine] = useState("");
+  const [sparks, setSparks] = useState<{ id: number; x: number; y: number }[]>([]);
+  const [isCulinaryTheme, setIsCulinaryTheme] = useState(false);
+
+  // Check if culinary theme is active
+  useEffect(() => {
+    const checkTheme = () => {
+      setIsCulinaryTheme(document.documentElement.classList.contains('theme-festive'));
+    };
+    checkTheme();
+    
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    
+    return () => observer.disconnect();
+  }, []);
+
+  // Click spark effect for culinary theme
+  const handleClick = useCallback((e: MouseEvent) => {
+    if (!document.documentElement.classList.contains('theme-festive')) return;
+    
+    const id = Date.now();
+    setSparks(prev => [...prev, { id, x: e.clientX, y: e.clientY }]);
+    
+    setTimeout(() => {
+      setSparks(prev => prev.filter(spark => spark.id !== id));
+    }, 400);
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, [handleClick]);
 
   const { trackSearch, trackRecipeView } = useAnalytics();
 
@@ -157,6 +207,10 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Spark effects for Culinary theme */}
+      {sparks.map(spark => (
+        <SparkEffect key={spark.id} x={spark.x} y={spark.y} />
+      ))}
       {/* Hero Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-3 sm:py-4">
@@ -212,13 +266,16 @@ const Index = () => {
         {!hasSearched && (
           <section className="text-center py-6 sm:py-10 mb-6 sm:mb-8">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Got Ingredients?
+              <span className={isCulinaryTheme ? "text-culinary-green" : ""}>Got </span>
+              <span className={isCulinaryTheme ? "text-culinary-orange" : ""}>Ingredients</span>
+              <span className={isCulinaryTheme ? "text-culinary-red" : ""}>?</span>
               <br />
               <span className="bg-gradient-warm bg-clip-text text-transparent">Find Your Perfect Dish!</span>
             </h2>
             <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto mb-6">
               Solve your ingredient cravings! Enter what you have, and Dishtail spins it into bold, cross-cuisine 
-              recipes that use <strong>all</strong> of them. Plus, explore 'surprise' cuisines you never heard of—like 
+              recipes that use <strong className={isCulinaryTheme ? "text-culinary-green" : ""}>all</strong> of them. 
+              Plus, explore <span className={isCulinaryTheme ? "text-culinary-orange font-medium" : ""}>'surprise' cuisines</span> you never heard of—like 
               Chinese recipes starring Indian chickpeas, Avocado-based Indian dishes, or Continental dishes with Paneer.
             </p>
           </section>
@@ -263,13 +320,17 @@ const Index = () => {
             {/* Cuisine Exploration Section */}
             <section className="py-8 sm:py-12 border-t border-border">
               <div className="text-center mb-8">
-                <h3 className="text-xl sm:text-2xl font-semibold mb-2 text-foreground flex items-center justify-center gap-2">
-                  <Sparkles className="w-6 h-6 text-primary" />
-                  Discover Surprise Cuisines
+                <h3 className={`text-xl sm:text-2xl font-semibold mb-2 flex items-center justify-center gap-2 ${isCulinaryTheme ? 'text-culinary-orange' : 'text-foreground'}`}>
+                  <Sparkles className={`w-6 h-6 ${isCulinaryTheme ? 'text-culinary-red' : 'text-primary'}`} />
+                  <span className={isCulinaryTheme ? 'text-culinary-green' : ''}>Discover</span>{" "}
+                  <span className={isCulinaryTheme ? 'text-culinary-orange' : ''}>Surprise</span>{" "}
+                  <span className={isCulinaryTheme ? 'text-culinary-red' : ''}>Cuisines</span>
                 </h3>
                 <p className="text-muted-foreground max-w-2xl mx-auto">
                   What if your everyday ingredients could create dishes from unexpected cuisines? 
-                  Indian dishes with avocado? Chinese recipes with chickpeas? Prepare to be surprised!
+                  <span className={isCulinaryTheme ? " text-culinary-green font-medium" : ""}> Indian dishes with avocado?</span>
+                  <span className={isCulinaryTheme ? " text-culinary-orange font-medium" : ""}> Chinese recipes with chickpeas?</span>
+                  <span className={isCulinaryTheme ? " text-culinary-red font-medium" : ""}> Prepare to be surprised!</span>
                 </p>
               </div>
               
@@ -308,17 +369,20 @@ const Index = () => {
               </div>
             </section>
 
-            {/* Features Section */}
             <section className="py-8 sm:py-12 border-t border-border">
-              <h3 className="text-xl sm:text-2xl font-semibold text-center mb-6 sm:mb-8 text-foreground">
-                How Dishtail Works
+              <h3 className={`text-xl sm:text-2xl font-semibold text-center mb-6 sm:mb-8 ${isCulinaryTheme ? '' : 'text-foreground'}`}>
+                <span className={isCulinaryTheme ? 'text-culinary-red' : ''}>How </span>
+                <span className={isCulinaryTheme ? 'text-culinary-green' : ''}>Dishtail </span>
+                <span className={isCulinaryTheme ? 'text-culinary-orange' : ''}>Works</span>
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 {features.map((feature, index) => (
                   <Card key={index} className="bg-card border-border hover:shadow-md transition-shadow">
                     <CardContent className="p-4 sm:p-6 text-center">
-                      <feature.icon className="w-10 h-10 text-primary mx-auto mb-3" />
-                      <h4 className="font-semibold text-foreground mb-2">{feature.title}</h4>
+                      {getFeatureIcon(index, isCulinaryTheme)}
+                      <h4 className={`font-semibold mb-2 ${isCulinaryTheme ? (index % 3 === 0 ? 'text-culinary-red' : index % 3 === 1 ? 'text-culinary-green' : 'text-culinary-orange') : 'text-foreground'}`}>
+                        {feature.title}
+                      </h4>
                       <p className="text-muted-foreground text-sm">{feature.description}</p>
                     </CardContent>
                   </Card>

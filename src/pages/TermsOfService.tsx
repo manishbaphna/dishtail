@@ -62,8 +62,9 @@ const TermsOfService = () => {
             <h3 className="text-xl font-medium mb-2 mt-4">Attribution</h3>
             <p className="text-muted-foreground">
               Where possible, we provide attribution to original sources. If you believe we have used content 
-              that infringes on your rights, please contact us immediately at manish.baphna@gmail.com with 
-              details of the alleged infringement.
+              that infringes on your rights, please{" "}
+              <Link to="/contact" className="text-primary hover:underline">contact us</Link>{" "}
+              immediately with details of the alleged infringement.
             </p>
 
             <h3 className="text-xl font-medium mb-2 mt-4">User Acknowledgement</h3>
@@ -233,12 +234,8 @@ const TermsOfService = () => {
           <section>
             <h2 className="text-2xl font-semibold mb-4">15. Contact Us</h2>
             <p className="text-muted-foreground">
-              If you have any questions about these Terms of Service, please contact us at:
-            </p>
-            <p className="text-muted-foreground mt-2">
-              <strong>Email:</strong> manish.baphna@gmail.com<br />
-              <strong>Contact Page:</strong>{" "}
-              <Link to="/contact" className="text-primary hover:underline">Contact Us</Link>
+              If you have any questions about these Terms of Service, please{" "}
+              <Link to="/contact" className="text-primary hover:underline">contact us</Link>.
             </p>
           </section>
         </div>
