@@ -1,7 +1,10 @@
 project_id = "jdjnmwwjdknvcywdoedl"
 
 [functions.search-recipes]
-verify_jwt = true
+verify_jwt = false
 
 [functions.analyze-nutrition]
 verify_jwt = true
+
+[functions.send-contact-email]
+verify_jwt = false
