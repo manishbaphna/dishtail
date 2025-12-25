@@ -118,8 +118,9 @@ const PrivacyPolicy = () => {
               <li>Legitimate interests (to improve our services and for security)</li>
             </ul>
             <p className="text-muted-foreground mt-4">
-              To exercise these rights, please contact us at manish.baphna@gmail.com. We will respond within 
-              30 days as required by law.
+              To exercise these rights, please{" "}
+              <Link to="/contact" className="text-primary hover:underline">contact us</Link>. 
+              We will respond within 30 days as required by law.
             </p>
           </section>
 
@@ -149,8 +150,9 @@ const PrivacyPolicy = () => {
               You may opt out of personalised advertising as described in Section 3.
             </p>
             <p className="text-muted-foreground mt-2">
-              To exercise your rights, contact us at manish.baphna@gmail.com or call us. We will verify your 
-              identity and respond within 45 days.
+              To exercise your rights,{" "}
+              <Link to="/contact" className="text-primary hover:underline">contact us</Link>. 
+              We will verify your identity and respond within 45 days.
             </p>
           </section>
 
@@ -217,12 +219,8 @@ const PrivacyPolicy = () => {
           <section>
             <h2 className="text-2xl font-semibold mb-4">13. Contact Us</h2>
             <p className="text-muted-foreground">
-              If you have any questions about this Privacy Policy or our data practices, please contact us at:
-            </p>
-            <p className="text-muted-foreground mt-2">
-              <strong>Email:</strong> manish.baphna@gmail.com<br />
-              <strong>Contact Page:</strong>{" "}
-              <Link to="/contact" className="text-primary hover:underline">Contact Us</Link>
+              If you have any questions about this Privacy Policy or our data practices, please{" "}
+              <Link to="/contact" className="text-primary hover:underline">contact us</Link>.
             </p>
           </section>
         </div>

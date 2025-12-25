@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, ArrowLeft } from "lucide-react";
 
-type AuthMode = "login" | "signup" | "forgot-password";
+type AuthMode = "login" | "signup";
 
 const Auth = () => {
   const [mode, setMode] = useState<AuthMode>("login");
@@ -75,39 +75,8 @@ const Auth = () => {
     }
   };
 
-  const handleForgotPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth`,
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: "Password reset email sent",
-        description: "Check your email for a link to reset your password.",
-      });
-      setMode("login");
-    } catch (error: any) {
-      toast({
-        title: "Failed to send reset email",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const getTitle = () => {
-    switch (mode) {
-      case "login": return "Sign in to your account";
-      case "signup": return "Create a new account";
-      case "forgot-password": return "Reset your password";
-    }
+    return mode === "login" ? "Sign in to your account" : "Create a new account";
   };
 
   return (
@@ -120,108 +89,57 @@ const Auth = () => {
           <CardDescription>{getTitle()}</CardDescription>
         </CardHeader>
         <CardContent>
-          {mode === "forgot-password" ? (
-            <form onSubmit={handleForgotPassword} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={isLoading}
-                />
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Enter your email address and we'll send you a link to reset your password.
-              </p>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Sending...
-                  </>
-                ) : (
-                  "Send Reset Link"
-                )}
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                className="w-full"
-                onClick={() => setMode("login")}
+          <form onSubmit={handleAuth} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
                 disabled={isLoading}
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Sign In
-              </Button>
-            </form>
-          ) : (
-            <form onSubmit={handleAuth} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={isLoading}
-                />
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
-                  {mode === "login" && (
-                    <button
-                      type="button"
-                      onClick={() => setMode("forgot-password")}
-                      className="text-sm text-primary hover:underline"
-                    >
-                      Forgot password?
-                    </button>
-                  )}
-                </div>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  disabled={isLoading}
-                  minLength={6}
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    {mode === "login" ? "Signing in..." : "Creating account..."}
-                  </>
-                ) : (
-                  <>{mode === "login" ? "Sign In" : "Sign Up"}</>
-                )}
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                className="w-full"
-                onClick={() => {
-                  setMode(mode === "login" ? "signup" : "login");
-                  setPassword("");
-                }}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
                 disabled={isLoading}
-              >
-                {mode === "login"
-                  ? "Don't have an account? Sign up"
-                  : "Already have an account? Sign in"}
-              </Button>
-            </form>
-          )}
+                minLength={6}
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  {mode === "login" ? "Signing in..." : "Creating account..."}
+                </>
+              ) : (
+                <>{mode === "login" ? "Sign In" : "Sign Up"}</>
+              )}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              className="w-full"
+              onClick={() => {
+                setMode(mode === "login" ? "signup" : "login");
+                setPassword("");
+              }}
+              disabled={isLoading}
+            >
+              {mode === "login"
+                ? "Don't have an account? Sign up"
+                : "Already have an account? Sign in"}
+            </Button>
+          </form>
         </CardContent>
       </Card>
     </div>

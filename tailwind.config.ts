@@ -47,6 +47,12 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        culinary: {
+          red: "hsl(var(--culinary-red, 0 75% 55%))",
+          green: "hsl(var(--culinary-green, 142 65% 42%))",
+          orange: "hsl(var(--culinary-orange, 28 95% 55%))",
+          yellow: "hsl(var(--culinary-yellow, 45 90% 55%))",
+        },
       },
       backgroundImage: {
         'gradient-warm': 'var(--gradient-warm)',

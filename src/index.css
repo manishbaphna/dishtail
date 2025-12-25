@@ -76,37 +76,91 @@ All colors MUST be HSL.
 
   /* Culinary theme - Warm kitchen colors with food-inspired palette */
   .theme-festive {
-    --background: 30 35% 96%;
-    --foreground: 20 30% 12%;
+    --background: 40 30% 97%;
+    --foreground: 20 35% 12%;
 
-    --card: 40 30% 99%;
-    --card-foreground: 20 30% 12%;
+    --card: 45 35% 99%;
+    --card-foreground: 20 35% 12%;
 
-    --popover: 40 30% 99%;
-    --popover-foreground: 20 30% 12%;
+    --popover: 45 35% 99%;
+    --popover-foreground: 20 35% 12%;
 
-    --primary: 15 75% 50%;
+    --primary: 15 85% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 45 55% 92%;
-    --secondary-foreground: 30 40% 20%;
+    --secondary: 45 60% 92%;
+    --secondary-foreground: 30 45% 20%;
 
-    --muted: 35 25% 93%;
-    --muted-foreground: 20 20% 40%;
+    --muted: 40 35% 93%;
+    --muted-foreground: 20 25% 40%;
 
-    --accent: 85 55% 45%;
+    --accent: 142 70% 40%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 35 30% 85%;
-    --input: 35 30% 85%;
-    --ring: 15 75% 50%;
+    --border: 35 35% 82%;
+    --input: 35 35% 82%;
+    --ring: 15 85% 50%;
 
-    --gradient-warm: linear-gradient(135deg, hsl(15 75% 50%), hsl(35 80% 55%));
-    --gradient-fresh: linear-gradient(135deg, hsl(85 55% 45%), hsl(45 70% 55%));
-    --shadow-soft: 0 4px 20px -4px hsl(15 75% 50% / 0.2);
+    /* Culinary-specific colors */
+    --culinary-red: 0 75% 55%;
+    --culinary-green: 142 65% 42%;
+    --culinary-orange: 28 95% 55%;
+    --culinary-yellow: 45 90% 55%;
+
+    --gradient-warm: linear-gradient(135deg, hsl(15 85% 50%), hsl(35 90% 55%));
+    --gradient-fresh: linear-gradient(135deg, hsl(142 70% 40%), hsl(85 60% 50%));
+    --shadow-soft: 0 4px 20px -4px hsl(15 85% 50% / 0.25);
+  }
+
+  /* Culinary theme cursor and effects */
+  .theme-festive * {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23e65100' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2v8'/%3E%3Cpath d='M12 18v4'/%3E%3Ccircle cx='12' cy='14' r='4'/%3E%3C/svg%3E") 12 12, auto;
+  }
+
+  .theme-festive a, 
+  .theme-festive button,
+  .theme-festive [role="button"],
+  .theme-festive input,
+  .theme-festive textarea,
+  .theme-festive select {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24' fill='%23ff6b35' stroke='%23e65100' stroke-width='1.5'%3E%3Cpath d='M12 2v8'/%3E%3Cpath d='M12 18v4'/%3E%3Ccircle cx='12' cy='14' r='4'/%3E%3Cellipse cx='12' cy='6' rx='1' ry='3' fill='%23ffcc02'/%3E%3C/svg%3E") 14 14, pointer;
+  }
+
+  /* Click spark effect for Culinary theme */
+  .theme-festive .spark-effect {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    z-index: 9999;
+    animation: spark 0.4s ease-out forwards;
+  }
+
+  @keyframes spark {
+    0% {
+      transform: scale(0.5);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(2);
+      opacity: 0;
+    }
+  }
+
+  /* Culinary theme colored labels */
+  .theme-festive .text-culinary-red {
+    color: hsl(0 75% 55%);
+  }
+  
+  .theme-festive .text-culinary-green {
+    color: hsl(142 65% 42%);
+  }
+  
+  .theme-festive .text-culinary-orange {
+    color: hsl(28 95% 55%);
   }
 }
 
