@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 // Import logo and dish images
-import dishtailLogo from "@/assets/dishtail-logo.jpg";
+import dishtailLogo from "@/assets/dishtail-logo.png";
 import bombaySandwichImg from "@/assets/bombay-sandwich.jpg";
 import chickenTikkaMasalaImg from "@/assets/chicken-tikka-masala.jpg";
 import mexicanQuesadillaImg from "@/assets/mexican-quesadilla.jpg";
