@@ -150,8 +150,22 @@ export const IngredientInput = ({
               type="number"
               min={1}
               max={20}
-              value={servingSize}
-              onChange={(e) => setServingSize(Math.max(1, parseInt(e.target.value) || 1))}
+              value={servingSize === 0 ? "" : servingSize}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val === "") {
+                  setServingSize(0); // Allow empty temporarily
+                } else {
+                  const num = parseInt(val);
+                  setServingSize(Math.min(20, Math.max(1, num || 1)));
+                }
+              }}
+              onBlur={(e) => {
+                // Default to 1 if empty on blur
+                if (e.target.value === "" || servingSize === 0) {
+                  setServingSize(1);
+                }
+              }}
               className="w-20"
             />
             <span className="text-sm text-muted-foreground">

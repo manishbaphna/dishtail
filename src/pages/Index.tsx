@@ -67,6 +67,17 @@ const cuisineExplorations = [
   },
 ];
 
+// Fun rotating messages for when no recipes are found
+const noRecipeMessages = [
+  "Hmm… you're definitely more adventurous than our current algorithm. 🧪",
+  "Your ingredient combo is out of this world! 🚀 Got a secret recipe to share via Contact Us?",
+  "DishTail is scratching its head on this one. 🤔 Maybe you just invented something new!",
+  "No recipes (yet)… but your creativity just gave our AI imposter syndrome. 🤖",
+  "We couldn't find a match – if you have a wild idea in mind, send it through Contact Us! 💡",
+  "Your culinary bravery is inspiring! Even our recipe wizards are stumped. 🧙‍♂️",
+  "This combo is so unique, it might need its own cooking show! 📺",
+];
+
 // Features with both regular and culinary-themed icons
 const getFeatureIcon = (index: number, isCulinary: boolean) => {
   const regularIcons = [Search, Leaf, Clock, Sparkles];
@@ -172,9 +183,10 @@ const Index = () => {
       const results = await searchRecipes(ingredients, cuisine, size);
 
       if (results.length === 0) {
+        const randomMessage = noRecipeMessages[Math.floor(Math.random() * noRecipeMessages.length)];
         toast({
           title: "No recipes found",
-          description: "We couldn't find any recipes using all your ingredients. Try different combinations!",
+          description: randomMessage,
         });
       } else {
         setRecipes(results);
