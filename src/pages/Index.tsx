@@ -5,7 +5,10 @@ import { User } from "@supabase/supabase-js";
 import { IngredientInput } from "@/components/IngredientInput";
 import { RecipeDisplay } from "@/components/RecipeDisplay";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
-import { ClockWithPlateIcon, WeighScaleIcon, MagicJarIcon, SparkEffect } from "@/components/CulinaryIcons";
+import { ClockWithPlateIcon, WeighScaleIcon, MagicJarIcon } from "@/components/CulinaryIcons";
+import { FloatingFoods } from "@/components/FloatingFoods";
+import { FoodClickEffect } from "@/components/FoodClickEffect";
+import { useFoodCursor } from "@/hooks/useFoodCursor";
 import { searchRecipes } from "@/utils/recipeSearch";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { Recipe } from "@/types/recipe";
@@ -111,7 +114,6 @@ const Index = () => {
   const [servingSize, setServingSize] = useState(1);
   const [hasSearched, setHasSearched] = useState(false);
   const [lastCuisine, setLastCuisine] = useState("");
-  const [sparks, setSparks] = useState<{ id: number; x: number; y: number }[]>([]);
   const [isCulinaryTheme, setIsCulinaryTheme] = useState(false);
 
   // Check if culinary theme is active
@@ -127,22 +129,8 @@ const Index = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Click spark effect for culinary theme
-  const handleClick = useCallback((e: MouseEvent) => {
-    if (!document.documentElement.classList.contains("theme-festive")) return;
-
-    const id = Date.now();
-    setSparks((prev) => [...prev, { id, x: e.clientX, y: e.clientY }]);
-
-    setTimeout(() => {
-      setSparks((prev) => prev.filter((spark) => spark.id !== id));
-    }, 400);
-  }, []);
-
-  useEffect(() => {
-    document.addEventListener("click", handleClick);
-    return () => document.removeEventListener("click", handleClick);
-  }, [handleClick]);
+  // Food cursor rotation for culinary theme
+  useFoodCursor(isCulinaryTheme);
 
   const { trackSearch, trackRecipeView } = useAnalytics();
 
@@ -233,10 +221,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Spark effects for Culinary theme */}
-      {sparks.map((spark) => (
-        <SparkEffect key={spark.id} x={spark.x} y={spark.y} />
-      ))}
+      {/* Culinary theme effects */}
+      <FloatingFoods enabled={isCulinaryTheme} />
+      <FoodClickEffect enabled={isCulinaryTheme} />
       {/* Hero Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-3 sm:py-4">
