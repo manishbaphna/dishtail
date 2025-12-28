@@ -22,6 +22,7 @@ const Contact = () => {
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
+  const [honeypot, setHoneypot] = useState(""); // Bot trap - should remain empty
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { toast } = useToast();
@@ -40,6 +41,16 @@ const Contact = () => {
         }
       });
       setErrors(fieldErrors);
+      return;
+    }
+
+    // Check honeypot - if filled, it's likely a bot
+    if (honeypot) {
+      // Silently pretend success to not alert bots
+      toast({
+        title: "Message sent!",
+        description: "Thank you for contacting us. We'll get back to you soon.",
+      });
       return;
     }
 
@@ -173,6 +184,19 @@ const Contact = () => {
                 {errors.message && <p className="text-sm text-destructive">{errors.message}</p>}
               </div>
 
+              {/* Honeypot field - hidden from humans, bots will fill it */}
+              <div className="absolute -left-[9999px]" aria-hidden="true">
+                <Label htmlFor="website">Website</Label>
+                <Input
+                  id="website"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                />
+              </div>
+
               <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? (
                   "Sending..."
@@ -196,7 +220,20 @@ const Contact = () => {
 
       <footer className="border-t border-border py-6 mt-8">
         <div className="container mx-auto px-4 text-center text-muted-foreground text-sm">
-          <p>© {new Date().getFullYear()} Dishtail — Find Recipes by Ingredients</p>
+          <p className="mb-2">
+            © {new Date().getFullYear()} Dishtail — Find Recipes by Ingredients
+          </p>
+          <div className="flex justify-center gap-4">
+            <Link to="/privacy" className="hover:text-primary transition-colors">
+              Privacy Policy
+            </Link>
+            <Link to="/terms" className="hover:text-primary transition-colors">
+              Terms of Service
+            </Link>
+            <Link to="/" className="hover:text-primary transition-colors">
+              Home
+            </Link>
+          </div>
         </div>
       </footer>
     </div>
