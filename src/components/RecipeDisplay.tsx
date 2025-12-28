@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Recipe } from "@/types/recipe";
+import { useNavigate } from "react-router-dom";
+import { Recipe, DietType } from "@/types/recipe";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { 
   Clock, Leaf, Heart, ChefHat, ChevronLeft, ChevronRight, Users, 
-  Bookmark, ShoppingCart, UtensilsCrossed, Activity, Loader2, X 
+  Bookmark, ShoppingCart, UtensilsCrossed, Activity, Loader2, X, Egg, Drumstick, Vegan 
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
@@ -49,6 +50,7 @@ export const RecipeDisplay = ({
   onNavigate,
   servingSize,
 }: RecipeDisplayProps) => {
+  const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [nutritionData, setNutritionData] = useState<NutritionData | null>(null);
@@ -102,14 +104,48 @@ export const RecipeDisplay = ({
   };
 
   const handleBuyIngredients = () => {
-    const ingredientsList = selectedRecipe.ingredients.join(" ");
-    const amazonUrl = `https://www.amazon.com/s?k=${encodeURIComponent(ingredientsList)}&i=amazonfresh`;
-    window.open(amazonUrl, "_blank");
+    navigate("/coming-soon?feature=buy-ingredients");
   };
 
   const handleOrderFood = () => {
-    const uberEatsUrl = `https://www.ubereats.com/search?q=${encodeURIComponent(selectedRecipe.title)}`;
-    window.open(uberEatsUrl, "_blank");
+    navigate("/coming-soon?feature=order-dish");
+  };
+
+  // Helper function to get diet type badge
+  const getDietBadge = () => {
+    const dietType = selectedRecipe.dietType || (selectedRecipe.isVegetarian ? "Vegetarian" : "Non-Vegetarian");
+    
+    const badgeConfig: Record<DietType, { icon: React.ReactNode; className: string; label: string }> = {
+      "Vegan": {
+        icon: <Vegan className="w-3 h-3 mr-1" />,
+        className: "bg-green-100 border-green-500 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+        label: "Vegan"
+      },
+      "Vegetarian": {
+        icon: <Leaf className="w-3 h-3 mr-1" />,
+        className: "bg-accent/10 border-accent text-accent-foreground",
+        label: "Vegetarian"
+      },
+      "Eggetarian": {
+        icon: <Egg className="w-3 h-3 mr-1" />,
+        className: "bg-yellow-100 border-yellow-500 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
+        label: "Eggetarian"
+      },
+      "Non-Vegetarian": {
+        icon: <Drumstick className="w-3 h-3 mr-1" />,
+        className: "bg-red-100 border-red-500 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+        label: "Non-Veg"
+      }
+    };
+    
+    const config = badgeConfig[dietType as DietType] || badgeConfig["Non-Vegetarian"];
+    
+    return (
+      <Badge variant="outline" className={config.className}>
+        {config.icon}
+        {config.label}
+      </Badge>
+    );
   };
 
   const handleAnalyzeNutrition = async () => {
@@ -176,12 +212,7 @@ export const RecipeDisplay = ({
               </CardDescription>
             </div>
             <div className="flex flex-wrap gap-2">
-              {selectedRecipe.isVegetarian && (
-                <Badge variant="outline" className="bg-accent/10 border-accent text-accent-foreground">
-                  <Leaf className="w-3 h-3 mr-1" />
-                  Vegetarian
-                </Badge>
-              )}
+              {getDietBadge()}
               {selectedRecipe.isHealthy && (
                 <Badge variant="outline" className="bg-accent/10 border-accent text-accent-foreground">
                   <Heart className="w-3 h-3 mr-1" />

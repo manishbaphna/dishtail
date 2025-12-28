@@ -5,13 +5,15 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+type DietType = "Vegetarian" | "Eggetarian" | "Vegan" | "Non-Vegetarian";
+
 interface Recipe {
   title: string;
   description: string;
   ingredients: string[];
   instructions: string[];
   prepTime: string;
-  isVegetarian: boolean;
+  dietType: DietType;
   isHealthy: boolean;
   source: string;
   url?: string;
@@ -54,7 +56,7 @@ serve(async (req) => {
     - Complete list of all ingredients with quantities for ${servingSize} ${servingSize === 1 ? 'serving' : 'servings'}
     - Step-by-step cooking instructions
     - Preparation time
-    - Whether it's vegetarian
+    - Diet type classification (IMPORTANT: Follow these rules exactly!)
     - Whether it's healthy (low sugar, not too oily)
     
     Return 5-7 different recipes. Make sure each recipe uses ALL the provided ingredients.`;
@@ -77,10 +79,24 @@ serve(async (req) => {
               "ingredients": ["ingredient 1 with quantity", "ingredient 2 with quantity", ...],
               "instructions": ["step 1", "step 2", ...],
               "prepTime": "time in minutes format like '25 minutes'",
-              "isVegetarian": true/false,
+              "dietType": "one of: Vegetarian, Eggetarian, Vegan, Non-Vegetarian",
               "isHealthy": true/false,
               "source": "Web Search"
             }
+            
+            CRITICAL DIET TYPE CLASSIFICATION RULES:
+            - "Vegan": No animal products at all (no meat, fish, eggs, dairy, honey)
+            - "Vegetarian": No meat or fish, but may include dairy products like milk, cheese, butter, paneer. NO EGGS!
+            - "Eggetarian": Vegetarian diet PLUS eggs. If a recipe contains eggs but no meat/fish, it MUST be "Eggetarian", NOT "Vegetarian"
+            - "Non-Vegetarian": Contains meat, poultry, fish, or seafood
+            
+            EXAMPLES:
+            - Recipe with eggs and vegetables = "Eggetarian" (NOT Vegetarian!)
+            - Recipe with cheese and vegetables = "Vegetarian"
+            - Recipe with only vegetables and plant-based ingredients = "Vegan"
+            - Recipe with chicken = "Non-Vegetarian"
+            - Egg curry, omelette, egg fried rice = "Eggetarian"
+            
             IMPORTANT: All ingredient quantities should be for ${servingSize} ${servingSize === 1 ? 'serving' : 'servings'}.
             Return ONLY valid JSON array, no markdown or extra text.`
           },
@@ -122,6 +138,33 @@ serve(async (req) => {
       if (!Array.isArray(recipes)) {
         throw new Error("AI did not return an array");
       }
+
+      // Validate and fix diet types
+      recipes = recipes.map(recipe => {
+        const ingredientsLower = recipe.ingredients.map(i => i.toLowerCase()).join(' ');
+        const titleLower = recipe.title.toLowerCase();
+        const descLower = recipe.description.toLowerCase();
+        const allText = `${ingredientsLower} ${titleLower} ${descLower}`;
+        
+        // Check for egg-related keywords
+        const hasEgg = /\begg[s]?\b|\begg\b|\bomelette\b|\bomelet\b|\bscrambled\b|\bfried egg\b|\bpoached egg\b|\begg curry\b|\begg bhurji\b/.test(allText);
+        
+        // Check for meat-related keywords
+        const hasMeat = /\bchicken\b|\bmutton\b|\blamb\b|\bbeef\b|\bpork\b|\bfish\b|\bprawn\b|\bshrimp\b|\bcrab\b|\blobster\b|\bturkey\b|\bduck\b|\bbacon\b|\bham\b|\bsausage\b|\bseafood\b/.test(allText);
+        
+        let dietType: DietType = recipe.dietType;
+        
+        // Override if our checks reveal issues
+        if (hasMeat) {
+          dietType = "Non-Vegetarian";
+        } else if (hasEgg && dietType === "Vegetarian") {
+          // Fix incorrect classification - eggs should be Eggetarian
+          dietType = "Eggetarian";
+          console.log(`Fixed diet type for "${recipe.title}": Vegetarian -> Eggetarian (contains eggs)`);
+        }
+        
+        return { ...recipe, dietType };
+      });
     } catch (parseError) {
       console.error("Failed to parse AI response:", parseError);
       // Return empty array if parsing fails
@@ -132,11 +175,20 @@ serve(async (req) => {
     }
 
     // Sort recipes by priority:
-    // 1. Vegetarian first
+    // 1. Vegan first, then Vegetarian, Eggetarian, Non-Vegetarian
     // 2. Healthy second
     // 3. Prep time third (ascending)
+    const dietOrder: Record<DietType, number> = {
+      "Vegan": 0,
+      "Vegetarian": 1,
+      "Eggetarian": 2,
+      "Non-Vegetarian": 3
+    };
+
     const sortedRecipes = recipes.sort((a, b) => {
-      if (a.isVegetarian !== b.isVegetarian) return a.isVegetarian ? -1 : 1;
+      const dietA = dietOrder[a.dietType] ?? 4;
+      const dietB = dietOrder[b.dietType] ?? 4;
+      if (dietA !== dietB) return dietA - dietB;
       if (a.isHealthy !== b.isHealthy) return a.isHealthy ? -1 : 1;
       
       const timeA = parseInt(a.prepTime);
