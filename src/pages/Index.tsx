@@ -16,6 +16,7 @@ import { Loader2, Sparkles, Clock, Leaf, Search, Bookmark, LogIn, LogOut, Lightb
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { SEO, WebsiteSchema, OrganizationSchema } from "@/components/SEO";
 
 // Import logo and dish images
 import dishtailLogo from "@/assets/dishtail-logo.jpg";
@@ -221,6 +222,10 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO canonical="/" />
+      <WebsiteSchema />
+      <OrganizationSchema />
+      
       {/* Culinary theme effects */}
       <FloatingFoods enabled={isCulinaryTheme} />
       <FoodClickEffect enabled={isCulinaryTheme} />
