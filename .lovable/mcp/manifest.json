@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.2",
+  "path": "/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "dishtail",
+      "version": "0.1.0",
+      "title": "Dishtail"
+    },
+    "tools": [
+      {
+        "name": "search_recipes",
+        "title": "Search recipes",
+        "description": "Find complete cooking recipes that use a given list of ingredients, optionally scoped to a cuisine and scaled to a serving size.",
+        "annotations": {
+          "readOnlyHint": true,
+          "openWorldHint": true
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "api_key": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Dishtail MCP API key."
+            },
+            "ingredients": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1,
+              "maxItems": 25,
+              "description": "Ingredients the recipe must use."
+            },
+            "cuisine": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60,
+              "description": "Optional cuisine, e.g. 'Italian'."
+            },
+            "serving_size": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20,
+              "default": 1,
+              "description": "Number of people to serve."
+            }
+          },
+          "required": [
+            "api_key",
+            "ingredients"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "analyze_nutrition",
+        "title": "Analyze nutrition",
+        "description": "Estimate calories, macros, vitamins, minerals and health notes for a recipe, per serving.",
+        "annotations": {
+          "readOnlyHint": true,
+          "openWorldHint": true
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "api_key": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Dishtail MCP API key."
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "description": "Recipe name."
+            },
+            "ingredients": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1,
+              "maxItems": 60,
+              "description": "Ingredients with quantities."
+            },
+            "serving_size": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20,
+              "default": 1,
+              "description": "Number of servings."
+            }
+          },
+          "required": [
+            "api_key",
+            "title",
+            "ingredients"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
